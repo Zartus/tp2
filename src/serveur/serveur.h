@@ -41,7 +41,7 @@ int ReceptionBinaire(char *donnees, size_t tailleMax);
  * renvoie le nombre d'octets envoy�s, 0 si la connexion est ferm�e,
  * un nombre n�gatif en cas d'erreur
  */
-int EmissioanBinaire(char *donnees, size_t taille);
+int EmissionBinaire(char *donnees, size_t taille);
 
 
 /* Ferme la connexion avec le client.
