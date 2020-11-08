@@ -32,6 +32,8 @@ ifeq ($(DEBUG),yes)
 else
 	@echo "Generating in release mode"
 endif
+	mkdir -p $(OBJDIR)
+	mkdir -p $(BINDIR)
 	@$(MAKE) $(EXECC)
 	@$(MAKE) $(EXECS)
 
@@ -52,7 +54,7 @@ clean:
 	@rm -rf $(OBJDIR)/*.o 
 
 mrproper: clean
-	@rm -rf $(EXECS) $(EXECC) documentation/html
+	@rm -rf $(OBJDIR) $(BINDIR) documentation/html
 
 doc: $(SRCDIRC)/client.h $(SRCDIRS)/serveur.h
 	@doxygen documentation/TP2

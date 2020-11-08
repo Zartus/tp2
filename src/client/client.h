@@ -1,10 +1,12 @@
 #ifndef __CLIENT_H__
 #define __CLIENT_H__
 
-/* Initialisation.
+/**
+ * @brief Initialisation.
  * Connexion au serveur sur la machine donnee.
  * Utilisez localhost pour un fonctionnement local.
- * renvoie 1 si �a c'est bien pass� 0 sinon
+ * @param machine la machine
+ * @return int 1 si ça c'est bien passé 0 sinon
  */
 int Initialisation(char *machine);
 
