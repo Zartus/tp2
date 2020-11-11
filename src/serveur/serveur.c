@@ -53,8 +53,8 @@ int Initialisation() {
 }
 
 /* Initialisation.
- * Creation du serveur en pr�cisant le service ou num�ro de port.
- * renvoie 1 si �a c'est bien pass� 0 sinon
+ * Creation du serveur en précisant le service ou numéro de port.
+ * renvoie 1 si ça c'est bien passé 0 sinon
  */
 int InitialisationAvecService(char *service) {
 	int n;
@@ -240,7 +240,7 @@ int ReceptionBinaire(char *donnees, size_t tailleMax) {
 	}
 }
 
-/* Envoie des donn�es au client en pr�cisant leur taille.
+/* Envoie des données au client en précisant leur taille.
  */
 int EmissionBinaire(char *donnees, size_t taille) {
 	int retour = 0;
@@ -253,6 +253,9 @@ int EmissionBinaire(char *donnees, size_t taille) {
 	}
 }
 
+int extraitFichier(char *requete, size_t longueurRequete, char *nomFichier, size_t maxNomFichier){
+	
+}
 
 
 /* Ferme la connexion avec le client.

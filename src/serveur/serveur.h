@@ -3,19 +3,19 @@
 
 /* Initialisation.
  * Creation du serveur.
- * renvoie 1 si �a c'est bien pass� 0 sinon
+ * renvoie 1 si à c'est bien passé 0 sinon
  */
 int Initialisation();
 
 /* Initialisation.
- * Creation du serveur en pr�cisant le service ou num�ro de port.
- * renvoie 1 si �a c'est bien pass� 0 sinon
+ * Creation du serveur en précisant le service ou num�ro de port.
+ * renvoie 1 si à c'est bien passé 0 sinon
  */
 int InitialisationAvecService(char *service);
 
 
 /* Attends qu'un client se connecte.
- * renvoie 1 si �a c'est bien pass� 0 sinon
+ * renvoie 1 si ça c'est bien passé 0 sinon
  */
 int AttenteClient();
 
@@ -27,19 +27,19 @@ char *Reception();
 
 /* Envoie un message au client.
  * Attention, le message doit etre termine par \n
- * renvoie 1 si �a c'est bien pass� 0 sinon
+ * renvoie 1 si ça c'est bien passé 0 sinon
  */
 int Emission(char *message);
 
 /* Recoit des donnees envoyees par le client.
- * renvoie le nombre d'octets re�us, 0 si la connexion est ferm�e,
+ * renvoie le nombre d'octets reçus, 0 si la connexion est fermée,
  * un nombre n�gatif en cas d'erreur
  */
 int ReceptionBinaire(char *donnees, size_t tailleMax);
 
-/* Envoie des donn�es au client en pr�cisant leur taille.
- * renvoie le nombre d'octets envoy�s, 0 si la connexion est ferm�e,
- * un nombre n�gatif en cas d'erreur
+/* Envoie des données au client en précisant leur taille.
+ * renvoie le nombre d'octets envoyés, 0 si la connexion est fermée,
+ * un nombre négatif en cas d'erreur
  */
 int EmissionBinaire(char *donnees, size_t taille);
 

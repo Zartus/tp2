@@ -2,52 +2,71 @@
 #include <stdlib.h>
 #include "client.h"
 
-int main() {
+int main()
+{
 	char *message;
 
-	if(Initialisation("localhost") != 1) {
+	if (InitialisationAvecService("www.licence.mathinfo.upmc.fr", "80") != 1)
+	{
 		printf("Erreur d'initialisation\n");
 		return 1;
 	}
 
-	if(Emission("Test de message client1.\n")!=1) {
-		printf("Erreur d'émission\n");
+	if (Emission("GET / HTTP/1.1\n") != 1)
+	{
+		printf("Erreur d'emission\n");
 		return 1;
 	}
-	if(Emission("Test de message client2.\n")!=1) {
-		printf("Erreur d'émission\n");
+
+	if (Emission("Host:www.licence.mathinfo.upmc.fr\n") != 1)
+	{
+		printf("Erreur d'emission\n");
 		return 1;
 	}
-	if(Emission("Test de message client3.\n")!=1) {
-		printf("Erreur d'émission\n");
+
+	if (Emission("\n") != 1)
+	{
+		printf("Erreur d'emission\n");
 		return 1;
 	}
 
 	message = Reception();
-	if(message != NULL) {
+	if (message != NULL)
+	{
 		printf("J'ai recu: %s\n", message);
 		free(message);
-	} else {
-		printf("Erreur de réception\n");
+	}
+	else
+	{
+		printf("Erreur de r√©ception\n");
 		return 1;
 	}
 
 	message = Reception();
-	if(message != NULL) {
+	if (message != NULL)
+	{
 		printf("J'ai recu: %s\n", message);
 		free(message);
-	} else {
-		printf("Erreur de réception\n");
+	}
+	else
+	{
+		printf("Erreur de r√©ception\n");
 		return 1;
 	}
 
-	message = Reception();
-	if(message != NULL) {
-		printf("J'ai recu: %s\n", message);
-		free(message);
-	} else {
-		printf("Erreur de réception\n");
-		return 1;
+	while (1)
+	{
+		message = Reception();
+		if (message != NULL)
+		{
+			printf("J'ai recu : %s\n", message);
+			free(message);
+		}
+		else
+		{
+			printf("Erreur de reception\n");
+			return 1;
+		}
 	}
 
 	Terminaison();
