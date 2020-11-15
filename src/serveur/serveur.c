@@ -24,7 +24,6 @@
 #define FALSE 0
 #define LONGUEUR_TAMPON 4096
 
-
 #ifdef WIN32
 #define perror(x) printf("%s : code d'erreur : %d\n", (x), WSAGetLastError())
 #define close closesocket
@@ -252,11 +251,6 @@ int EmissionBinaire(char *donnees, size_t taille) {
 		return retour;
 	}
 }
-
-int extraitFichier(char *requete, size_t longueurRequete, char *nomFichier, size_t maxNomFichier){
-	
-}
-
 
 /* Ferme la connexion avec le client.
  */

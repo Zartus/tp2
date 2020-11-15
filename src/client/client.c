@@ -11,7 +11,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <errno.h>
-
 #include "client.h"
 
 #define TRUE 1
@@ -144,7 +143,7 @@ int ReceptionBinaire(char *donnees, size_t tailleMax) {
 	}
 }
 
-/* Envoie des donn�es au serveur en pr�cisant leur taille.
+/* Envoie des données au serveur en précisant leur taille.
  */
 int EmissionBinaire(char *donnees, size_t taille) {
 	int retour = 0;
@@ -156,7 +155,6 @@ int EmissionBinaire(char *donnees, size_t taille) {
 		return retour;
 	}
 }
-
 
 /* Ferme la connexion.
  */

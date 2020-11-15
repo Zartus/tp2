@@ -6,7 +6,7 @@ int main()
 {
 	char *message;
 
-	if (InitialisationAvecService("www.licence.mathinfo.upmc.fr", "80") != 1)
+	if (InitialisationAvecService("www.google.fr", "80") != 1)
 	{
 		printf("Erreur d'initialisation\n");
 		return 1;

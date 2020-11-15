@@ -1,12 +1,13 @@
-CC=gcc
-CFLAGS=-Wall
-#CFLAGS=-std=c99 -Wextra -Wall -Werror -pedantic 
-LDFLAGS=-lm
-
+INCLUDE = include
 OBJDIR = obj
 BINDIR = bin
 SRCDIRC = src/client
 SRCDIRS = src/serveur
+
+CC=gcc
+CFLAGS=-Wall -I$(INCLUDE) -pedantic# -std=c11
+#CFLAGS=-std=c99 -Wextra -Wall -Werror -pedantic
+LDFLAGS=-lm
 
 ifeq ($(DEBUG),yes)
 	CFLAGS += -g
@@ -54,7 +55,7 @@ clean:
 	@rm -rf $(OBJDIR)/*.o 
 
 mrproper: clean
-	@rm -rf $(OBJDIR) $(BINDIR) documentation/html
+	@rm -rf $(OBJDIR) $(BINDIR) documentation/html documentation/latex
 
-doc: $(SRCDIRC)/client.h $(SRCDIRS)/serveur.h
+doc: include/*
 	@doxygen documentation/TP2

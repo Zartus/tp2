@@ -10,38 +10,54 @@
  */
 int Initialisation(char *machine);
 
-/* Initialisation.
+/**
+ * @brief Initialisation.
  * Connexion au serveur sur la machine donnee et au service donne.
  * Utilisez localhost pour un fonctionnement local.
- * renvoie 1 si ça c'est bien passé 0 sinon
+ * @param machine la machine
+ * @param service le service
+ * @return renvoie 1 si ça c'est bien passé 0 sinon
  */
 int InitialisationAvecService(char *machine, char *service);
 
-/* Recoit un message envoye par le serveur.
- * retourne le message ou NULL en cas d'erreur.
+/**
+ * @brief Recoit un message envoye par le serveur.
  * Note : il faut liberer la memoire apres traitement.
+ * @return char* retourne le message ou NULL en cas d'erreur.
  */
 char *Reception();
 
-/* Envoie un message au serveur.
+/**
+ * @brief Envoie un message au serveur.
  * Attention, le message doit etre termine par \n
- * renvoie 1 si ça c'est bien passé 0 sinon
+ * @param message 
+ * @return int renvoie 1 si ça c'est bien passé 0 sinon
  */
 int Emission(char *message);
 
-/* Recoit des donnees envoyees par le serveur.
- * renvoie le nombre d'octets reçus, 0 si la connexion est fermée,
+/**
+ * @brief Recoit des donnees envoyees par le serveur.
+ * 
+ * @param donnees 
+ * @param tailleMax 
+ * @return int renvoie le nombre d'octets reçus, 0 si la connexion est fermée,
  * un nombre négatif en cas d'erreur
  */
 int ReceptionBinaire(char *donnees, size_t tailleMax);
 
-/* Envoie des données au serveur en précisant leur taille.
- * renvoie le nombre d'octets envoyés, 0 si la connexion est fermée,
+/**
+ * @brief Envoie des données au serveur en précisant leur taille.
+ * 
+ * @param donnees 
+ * @param taille 
+ * @return int renvoie le nombre d'octets envoyés, 0 si la connexion est fermée
  * un nombre négatif en cas d'erreur
  */
 int EmissionBinaire(char *donnees, size_t taille);
 
-/* Ferme la connexion.
+/**
+ * @brief Ferme la connexion.
+ * 
  */
 void Terminaison();
 
