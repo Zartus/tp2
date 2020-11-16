@@ -5,7 +5,7 @@ SRCDIRC = src/client
 SRCDIRS = src/serveur
 
 CC=gcc
-CFLAGS=-Wall -I$(INCLUDE) -pedantic# -std=c11
+CFLAGS=-Wall -I$(INCLUDE)
 #CFLAGS=-std=c99 -Wextra -Wall -Werror -pedantic
 LDFLAGS=-lm
 
@@ -27,11 +27,14 @@ EXECS=$(BINDIR)/serveurExec
 SRCS= $(wildcard $(SRCDIRS)/*.c)
 OBJS= $(SRCS:.c=.o)
 
+#compile le client et le serveur
 all: client serveur
 
+#compile le client
 client:print dependance
 	@$(MAKE) $(EXECC)
 
+#compile le serveur
 serveur:print dependance
 	@$(MAKE) $(EXECS)
 
@@ -50,9 +53,11 @@ $(EXECS): $(OBJS)
 #.PHONY permet d'éviter les problemes de dependance si un fichier s'appelle clean ou mrproper
 .PHONY: clean mrproper
 
+#mise en place des dépendances
 dependance:
 	@mkdir -p $(BINDIR) $(OBJDIR)
 
+#affichage du mode de compilation
 print:
 ifeq ($(DEBUG),yes)
 	@echo "Générer en mode debug"
@@ -66,7 +71,7 @@ clean:
 
 #Permet de supprimer tout ce qui à été générer
 mrproper: clean
-	@rm -rf $(OBJDIR) $(BINDIR) documentation/html documentation/latex $(SRCDIRC)/*.o $(SRCDIRS)/*.o
+	@rm -rf $(OBJDIR) $(BINDIR) documentation/html documentation/latex 
 
 #Permet de générer la documentation
 doc: include/*
