@@ -27,35 +27,47 @@ EXECS=$(BINDIR)/serveurExec
 SRCS= $(wildcard $(SRCDIRS)/*.c)
 OBJS= $(SRCS:.c=.o)
 
-all: 
-ifeq ($(DEBUG),yes)
-	@echo "Generating in debug mode"
-else
-	@echo "Generating in release mode"
-endif
-	mkdir -p $(OBJDIR)
-	mkdir -p $(BINDIR)
+all: client serveur
+
+client:print dependance
 	@$(MAKE) $(EXECC)
+
+serveur:print dependance
 	@$(MAKE) $(EXECS)
 
-$(EXECC): $(OBJC)
+$(EXECC):  $(OBJC)
 	@$(CC) -o $@ $^ $(LDFLAGS)
-	mv $(SRCDIRC)/*.o $(OBJDIR)/
+	@mv $(SRCDIRC)/*.o obj
+
 
 $(EXECS): $(OBJS)
 	@$(CC) -o $@ $^ $(LDFLAGS)
-	mv $(SRCDIRS)/*.o $(OBJDIR)/
+	@mv $(SRCDIRS)/*.o obj
 
 %.o: %.c
-	@$(CC) -o $@ -c $< $(CFLAGS)
+	@$(CC) -o  $@ -c $< $(CFLAGS)
 
+#.PHONY permet d'éviter les problemes de dependance si un fichier s'appelle clean ou mrproper
 .PHONY: clean mrproper
 
+dependance:
+	@mkdir -p $(BINDIR) $(OBJDIR)
+
+print:
+ifeq ($(DEBUG),yes)
+	@echo "Générer en mode debug"
+else
+	@echo "Générer en mode release"
+endif
+
+#Permet de supprimer tout les fichiers .o
 clean:
 	@rm -rf $(OBJDIR)/*.o 
 
+#Permet de supprimer tout ce qui à été générer
 mrproper: clean
-	@rm -rf $(OBJDIR) $(BINDIR) documentation/html documentation/latex
+	@rm -rf $(OBJDIR) $(BINDIR) documentation/html documentation/latex $(SRCDIRC)/*.o $(SRCDIRS)/*.o
 
+#Permet de générer la documentation
 doc: include/*
 	@doxygen documentation/TP2
