@@ -112,7 +112,7 @@ int Emission(char *message) {
 /* Recoit des donnees envoyees par le serveur.
  */
 int ReceptionBinaire(char *donnees, size_t tailleMax) {
-	int dejaRecu = 0;
+	size_t dejaRecu = 0;//modif
 	int retour = 0;
 	/* on commence par recopier tout ce qui reste dans le tampon
 	 */

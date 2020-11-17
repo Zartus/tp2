@@ -5,8 +5,7 @@ SRCDIRC = src/client
 SRCDIRS = src/serveur
 
 CC=gcc
-CFLAGS=-Wall -I$(INCLUDE)
-#CFLAGS=-std=c99 -Wextra -Wall -Werror -pedantic
+CFLAGS=-Wall -I$(INCLUDE) -Werror -pedantic -Wextra
 LDFLAGS=-lm
 
 ifeq ($(DEBUG),yes)
@@ -42,7 +41,6 @@ $(EXECC):  $(OBJC)
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@mv $(SRCDIRC)/*.o obj
 
-
 $(EXECS): $(OBJS)
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@mv $(SRCDIRS)/*.o obj
@@ -65,9 +63,9 @@ else
 	@echo "Générer en mode release"
 endif
 
-#Permet de supprimer tout les fichiers .o
+#Permet de supprimer le fichier obj qui contient les .o
 clean:
-	@rm -rf $(OBJDIR)/*.o 
+	@rm -rf $(OBJDIR)
 
 #Permet de supprimer tout ce qui à été générer
 mrproper: clean
