@@ -30,11 +30,11 @@ OBJS= $(SRCS:.c=.o)
 all: client serveur
 
 #compile le client
-client:print dependance
+client:dependance
 	@$(MAKE) $(EXECC)
 
 #compile le serveur
-serveur:print dependance
+serveur:dependance
 	@$(MAKE) $(EXECS)
 
 $(EXECC):  $(OBJC)
@@ -49,10 +49,10 @@ $(EXECS): $(OBJS)
 	@$(CC) -o  $@ -c $< $(CFLAGS)
 
 #.PHONY permet d'éviter les problemes de dependance si un fichier s'appelle clean ou mrproper
-.PHONY: clean mrproper
+.PHONY: clean mrproper client serveur
 
 #mise en place des dépendances
-dependance:
+dependance:print
 	@mkdir -p $(BINDIR) $(OBJDIR)
 
 #affichage du mode de compilation
@@ -65,7 +65,7 @@ endif
 
 #Permet de supprimer le fichier obj qui contient les .o
 clean:
-	@rm -rf $(OBJDIR)
+	@rm -rf $(OBJDIR) $(SRCDIRC)/*.o $(SRCDIRS)/*.o
 
 #Permet de supprimer tout ce qui à été générer
 mrproper: clean

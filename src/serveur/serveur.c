@@ -43,11 +43,11 @@ char tamponClient[LONGUEUR_TAMPON];
 int debutTampon;
 int finTampon;
 
-
 /* Initialisation.
  * Creation du serveur.
  */
-int Initialisation() {
+int Initialisation()
+{
 	return InitialisationAvecService("13214");
 }
 
@@ -55,52 +55,56 @@ int Initialisation() {
  * Creation du serveur en précisant le service ou numéro de port.
  * renvoie 1 si ça c'est bien passé 0 sinon
  */
-int InitialisationAvecService(char *service) {
+int InitialisationAvecService(char *service)
+{
 	int n;
 	const int on = 1;
-	struct addrinfo	hints, *res, *ressave;
+	struct addrinfo hints, *res, *ressave;
 
-	#ifdef WIN32
-	WSADATA	wsaData;
-	if (WSAStartup(0x202,&wsaData) == SOCKET_ERROR)
+#ifdef WIN32
+	WSADATA wsaData;
+	if (WSAStartup(0x202, &wsaData) == SOCKET_ERROR)
 	{
-		printf("WSAStartup() n'a pas fonctionne, erreur : %d\n", WSAGetLastError()) ;
+		printf("WSAStartup() n'a pas fonctionne, erreur : %d\n", WSAGetLastError());
 		WSACleanup();
 		exit(1);
 	}
 	memset(&hints, 0, sizeof(struct addrinfo));
-    #else
+#else
 	bzero(&hints, sizeof(struct addrinfo));
-	#endif
+#endif
 
 	hints.ai_flags = AI_PASSIVE;
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	if ( (n = getaddrinfo(NULL, service, &hints, &res)) != 0)  {
-     		printf("Initialisation, erreur de getaddrinfo : %s", gai_strerror(n));
-     		return 0;
+	if ((n = getaddrinfo(NULL, service, &hints, &res)) != 0)
+	{
+		printf("Initialisation, erreur de getaddrinfo : %s", gai_strerror(n));
+		return 0;
 	}
 	ressave = res;
 
-	do {
+	do
+	{
 		socketEcoute = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 		if (socketEcoute < 0)
-			continue;		/* error, try next one */
+			continue; /* error, try next one */
 
-		setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, (char*)&on, sizeof(on));
+		setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEADDR, (char *)&on, sizeof(on));
 #ifdef BSD
 		setsockopt(socketEcoute, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on));
 #endif
 		if (bind(socketEcoute, res->ai_addr, res->ai_addrlen) == 0)
-			break;			/* success */
+			break; /* success */
 
-		close(socketEcoute);	/* bind error, close and try next one */
-	} while ( (res = res->ai_next) != NULL);
+		close(socketEcoute); /* bind error, close and try next one */
+	} while ((res = res->ai_next) != NULL);
 
-	if (res == NULL) {
-     		perror("Initialisation, erreur de bind.");
-     		return 0;
+	if (res == NULL)
+	{
+		perror("Initialisation, erreur de bind.");
+		return 0;
 	}
 
 	/* conserve la longueur de l'addresse */
@@ -116,19 +120,24 @@ int InitialisationAvecService(char *service) {
 
 /* Attends qu'un client se connecte.
  */
-int AttenteClient() {
+int AttenteClient()
+{
 	struct sockaddr *clientAddr;
 	char machine[NI_MAXHOST];
 
-	clientAddr = (struct sockaddr*) malloc(longeurAdr);
+	clientAddr = (struct sockaddr *)malloc(longeurAdr);
 	socketService = accept(socketEcoute, clientAddr, &longeurAdr);
-	if (socketService == -1) {
+	if (socketService == -1)
+	{
 		perror("AttenteClient, erreur de accept.");
 		return 0;
 	}
-	if(getnameinfo(clientAddr, longeurAdr, machine, NI_MAXHOST, NULL, 0, 0) == 0) {
+	if (getnameinfo(clientAddr, longeurAdr, machine, NI_MAXHOST, NULL, 0, 0) == 0)
+	{
 		printf("Client sur la machine d'adresse %s connecte.\n", machine);
-	} else {
+	}
+	else
+	{
 		printf("Client anonyme connecte.\n");
 	}
 	free(clientAddr);
@@ -143,19 +152,23 @@ int AttenteClient() {
 
 /* Recoit un message envoye par le serveur.
  */
-char *Reception() {
+char *Reception()
+{
 	char message[LONGUEUR_TAMPON];
 	int index = 0;
 	int fini = FALSE;
 	int retour = 0;
-	while(!fini) {
+	while (!fini)
+	{
 		/* on cherche dans le tampon courant */
-		while((finTampon > debutTampon) &&
-			(tamponClient[debutTampon]!='\n')) {
+		while ((finTampon > debutTampon) &&
+			   (tamponClient[debutTampon] != '\n'))
+		{
 			message[index++] = tamponClient[debutTampon++];
 		}
 		/* on a trouve ? */
-		if ((index > 0) && (tamponClient[debutTampon]=='\n')) {
+		if ((index > 0) && (tamponClient[debutTampon] == '\n'))
+		{
 			message[index++] = '\n';
 			message[index] = '\0';
 			debutTampon++;
@@ -165,17 +178,24 @@ char *Reception() {
 #else
 			return strdup(message);
 #endif
-		} else {
+		}
+		else
+		{
 			/* il faut en lire plus */
 			debutTampon = 0;
 			retour = recv(socketService, tamponClient, LONGUEUR_TAMPON, 0);
-			if (retour < 0) {
+			if (retour < 0)
+			{
 				perror("Reception, erreur de recv.");
 				return NULL;
-			} else if(retour == 0) {
+			}
+			else if (retour == 0)
+			{
 				fprintf(stderr, "Reception, le client a ferme la connexion.\n");
 				return NULL;
-			} else {
+			}
+			else
+			{
 				/*
 				 * on a recu "retour" octets
 				 */
@@ -189,30 +209,34 @@ char *Reception() {
 /* Envoie un message au client.
  * Attention, le message doit etre termine par \n
  */
-int Emission(char *message) {
+int Emission(char *message)
+{
 	int taille;
-	if(strstr(message, "\n") == NULL) {
+	if (strstr(message, "\n") == NULL)
+	{
 		fprintf(stderr, "Emission, Le message n'est pas termine par \\n.\n");
 		return 0;
 	}
 	taille = strlen(message);
-	if (send(socketService, message, taille,0) == -1) {
-        perror("Emission, probleme lors du send.");
-        return 0;
+	if (send(socketService, message, taille, 0) == -1)
+	{
+		perror("Emission, probleme lors du send.");
+		return 0;
 	}
-	printf("Emission de %d caracteres.\n", taille+1);
+	printf("Emission de %d caracteres.\n", taille + 1);
 	return 1;
 }
 
-
 /* Recoit des donnees envoyees par le client.
  */
-int ReceptionBinaire(char *donnees, size_t tailleMax) {
+int ReceptionBinaire(char *donnees, size_t tailleMax)
+{
 	size_t dejaRecu = 0;
 	int retour = 0;
 	/* on commence par recopier tout ce qui reste dans le tampon
 	 */
-	while((finTampon > debutTampon) && (dejaRecu < tailleMax)) {
+	while ((finTampon > debutTampon) && (dejaRecu < tailleMax))
+	{
 		donnees[dejaRecu] = tamponClient[debutTampon];
 		dejaRecu++;
 		debutTampon++;
@@ -220,46 +244,60 @@ int ReceptionBinaire(char *donnees, size_t tailleMax) {
 	/* si on n'est pas arrive au max
 	 * on essaie de recevoir plus de donnees
 	 */
-	if(dejaRecu < tailleMax) {
+	if (dejaRecu < tailleMax)
+	{
 		retour = recv(socketService, donnees + dejaRecu, tailleMax - dejaRecu, 0);
-		if(retour < 0) {
+		if (retour < 0)
+		{
 			perror("ReceptionBinaire, erreur de recv.");
 			return -1;
-		} else if(retour == 0) {
+		}
+		else if (retour == 0)
+		{
 			fprintf(stderr, "ReceptionBinaire, le client a ferme la connexion.\n");
 			return 0;
-		} else {
+		}
+		else
+		{
 			/*
 			 * on a recu "retour" octets en plus
 			 */
 			return dejaRecu + retour;
 		}
-	} else {
+	}
+	else
+	{
 		return dejaRecu;
 	}
 }
 
 /* Envoie des données au client en précisant leur taille.
  */
-int EmissionBinaire(char *donnees, size_t taille) {
+int EmissionBinaire(char *donnees, size_t taille)
+{
 	int retour = 0;
 	retour = send(socketService, donnees, taille, 0);
-	if(retour == -1) {
+	if (retour == -1)
+	{
 		perror("Emission, probleme lors du send.");
 		return -1;
-	} else {
+	}
+	else
+	{
 		return retour;
 	}
 }
 
 /* Ferme la connexion avec le client.
  */
-void TerminaisonClient() {
+void TerminaisonClient()
+{
 	close(socketService);
 }
 
 /* Arrete le serveur.
  */
-void Terminaison() {
+void Terminaison()
+{
 	close(socketEcoute);
 }
