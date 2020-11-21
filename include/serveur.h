@@ -2,6 +2,11 @@
 #define __SERVEUR_H__
 
 /**
+ *	@brief definition opaque de la strcuture requete
+ */
+typedef struct s_httpRequestStruct *Requete;
+
+/**
  * @brief Initialisation.
  * Creation du serveur.
  * @return int renvoie 1 si à c'est bien passé 0 sinon
@@ -69,5 +74,14 @@ void TerminaisonClient();
  * 
  */
 void Terminaison();
+
+/**
+ * @brief Permet de connaitre le type de la requete
+ * 
+ * @param requete la chaine de caractere qui contiente la requete
+ * @param sRequest la structure de la re
+ * @return int 
+ */
+int typerequete(char *requete,Requete sRequest);
 
 #endif

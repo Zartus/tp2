@@ -6,10 +6,10 @@ int main() {
 	char *message = NULL;
 
 	Initialisation();
-
+	
 	while(1) {
 		int fini = 0;
-	
+
 		AttenteClient();
 	
 		while(!fini) {
