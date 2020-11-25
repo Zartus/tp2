@@ -3,8 +3,14 @@
 #include "serveur.h"
 
 int main() {
-	char *message = NULL;
-
+	//char *message = NULL;
+	Requete requete;
+	//(void)requete;
+	requete = typeRequete("GET /index.html HTTP/1.1");
+	
+	affichage(requete);
+	freeRequete(requete);
+	/*
 	Initialisation();
 	
 	while(1) {
@@ -28,7 +34,7 @@ int main() {
 		}
 
 		TerminaisonClient();
-	}
+	}*/
 
 	return 0;
 }

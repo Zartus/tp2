@@ -1,3 +1,4 @@
+#include <stddef.h>
 #ifndef __SERVEUR_H__
 #define __SERVEUR_H__
 
@@ -75,13 +76,10 @@ void TerminaisonClient();
  */
 void Terminaison();
 
-/**
- * @brief Permet de connaitre le type de la requete
- * 
- * @param requete la chaine de caractere qui contiente la requete
- * @param sRequest la structure de la re
- * @return int 
- */
-int typerequete(char *requete,Requete sRequest);
+Requete typeRequete(char *requete);
+
+void affichage(Requete r);
+
+void freeRequete(Requete sRequest);
 
 #endif

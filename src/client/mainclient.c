@@ -2,15 +2,10 @@
 #include <stdlib.h>
 #include "client.h"
 
-int multiplier(int a,int b){
-	char tab[a][b];
-	return sizeof(tab);
-}
-
 int main()
 {
 	char *message;
-	printf("%d\n",multiplier(1000000,1000000));
+	
 	if (InitialisationAvecService("www.licence.mathinfo.upmc.fr", "80") != 1)
 	{
 		printf("Erreur d'initialisation\n");
