@@ -8,6 +8,7 @@ typedef struct s_httpRequestStruct
     char *commande;
     float protocoleVersion;
     char *fichier;
+    char *extension;
     //char *corps;
 } RequeteStruct;
 
@@ -22,12 +23,20 @@ int commandeR(char *requete,Requete r){
     return err;
 }
 
+void getExtension(Requete r){
+    char com[256]="";
+    char prev[256]="";
+    printf("on a ici : %s\n",r->fichier);
+    sscanf(r->fichier,"%[^.].%s",com,prev);
+    r->extension=malloc(sizeof(char)*strlen(prev)+1);
+    strcpy(r->extension,prev);
+}
+
 int getFichier(char *requete,Requete r){
     char com[256]="";
     char prev[256]="";
     int err=0;
     err=sscanf(requete,"%s /%s HTTP",prev,com);
-    printf("valeur de com ==%s\n",com);
     r->fichier=malloc(sizeof(char)*(strlen(com)+1));
     strcpy(r->fichier,com);
     return err;
@@ -57,14 +66,14 @@ Requete typeRequete(char *requete)
         free(r);
         exit(2);
     }
-
+    getExtension(r);
+    printf("%s\n",r->extension);
     return r;
 }
 
 void affichage(Requete r){
     printf("%s %s\n",r->commande,r->fichier);
 }
-
 
 void freeRequete(Requete sRequest){
     free(sRequest->fichier);
@@ -90,4 +99,3 @@ size_t longeurFichier(Requete r){
     }
     return size;
 }
-
