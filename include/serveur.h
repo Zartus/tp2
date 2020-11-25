@@ -82,4 +82,6 @@ void affichage(Requete r);
 
 void freeRequete(Requete sRequest);
 
+size_t longeurFichier(Requete r);
+
 #endif

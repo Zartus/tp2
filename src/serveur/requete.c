@@ -65,10 +65,29 @@ void affichage(Requete r){
     printf("%s %s\n",r->commande,r->fichier);
 }
 
+
 void freeRequete(Requete sRequest){
     free(sRequest->fichier);
     free(sRequest->commande);
     free(sRequest);
-    printf("here");
+}
+
+size_t longeurFichier(Requete r){
+    FILE* file;
+    int size = 0; 
+    if((file=fopen(r->fichier,"r"))==NULL){
+        perror("pas ouvert");
+        exit(3);
+    }
+    
+    fseek(file,0, SEEK_END);
+    
+    size = ftell(file);
+    
+    if(fclose(file)==EOF){
+        perror("probleme fermeture fichier");
+        exit(4);
+    }
+    return size;
 }
 

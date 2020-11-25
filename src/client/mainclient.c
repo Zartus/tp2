@@ -6,25 +6,13 @@ int main()
 {
 	char *message;
 	
-	if (InitialisationAvecService("www.licence.mathinfo.upmc.fr", "80") != 1)
+	if (Initialisation("localhost") != 1)
 	{
 		printf("Erreur d'initialisation\n");
 		return 1;
 	}
 
-	if (Emission("GET / HTTP/1.1\n") != 1)
-	{
-		printf("Erreur d'emission\n");
-		return 1;
-	}
-
-	if (Emission("Host:www.licence.mathinfo.upmc.fr\n") != 1)
-	{
-		printf("Erreur d'emission\n");
-		return 1;
-	}
-
-	if (Emission("\n") != 1)
+	if (Emission("GET /fichier/index.html HTTP/1.1\r\n") != 1)
 	{
 		printf("Erreur d'emission\n");
 		return 1;
