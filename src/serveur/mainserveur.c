@@ -4,54 +4,64 @@
 #include <string.h>
 int main()
 {
-	char *message = NULL;
-	Requete requete;
+    char *message = NULL;
+    char extension[256];
 
-	//(void)requete;
-	/*requete = typeRequete("GET /fichier/index.html HTTP/1.1");
-	
-	affichage(requete);
-	printf("longeurfichier==%ld\n",longeurFichier(requete));
-	freeRequete(requete);*/
+    Requete requete;
+    char test[256];
+    
+    //(void)requete;
+    /*requete = typeRequete("GET /fichier/index.html HTTP/1.1");
+    
+    affichage(requete);
+    printf("longeurfichier==%ld\n",longeurFichier(requete));
+    freeRequete(requete);*/
 
-	Initialisation();
+    Initialisation();
 
-	while (1)
-	{
-		int fini = 0;
+    while (1)
+    {
+        int fini = 0;
 
-		AttenteClient();
+        AttenteClient();
 
-		while (!fini)
-		{
-			message = Reception();
+        while (!fini)
+        {
+            message = Reception();
 
-			if (message != NULL)
-			{
-				printf("J'ai recu: %s\n", message);
-				requete = typeRequete(message);
+            if (message != NULL)
+            {
+                printf("J'ai recu: %s\n", message);
+                requete = typeRequete(message);
 
-				affichage(requete);
-				
-				char test[25];
-				sprintf(test,"%ld",longeurFichier(requete));
-				strcat(test,"\n");
-				
-				if (Emission(test) != 1)
-				{
-					printf("Erreur d'emission\n");
-				}
-				freeRequete(requete);
-				free(message);
-			}
-			else
-			{
-				fini = 1;
-			}
-		}
+                affichage(requete);
+                //stockage type requete
+				strcpy(extension,"Content type : text/");
+				strcat(extension,getExtension(requete));
+				strcat(extension,"\n");
+                //extension = getExtension(requete);
+                //stockage longueur fichier
+                sprintf(test,"%ld",longeurFichier(requete));
+				strcat(extension,"Content-length : ");
+				strcat(extension,test);
+                
+                strcat(extension,"\n");
+                if (Emission(extension) != 1)
+                {
+                    printf("Erreur d'emission\n");
+                }
 
-		TerminaisonClient();
-	}
+                freeRequete(requete);
+                free(message);
+            }
+            else
+            {
+                fini = 1;
+            }
+        }
 
-	return 0;
+        TerminaisonClient();
+    }
+
+    return 0;
 }

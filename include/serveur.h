@@ -84,4 +84,6 @@ void freeRequete(Requete sRequest);
 
 size_t longeurFichier(Requete r);
 
+char *getExtension(Requete r);
+
 #endif

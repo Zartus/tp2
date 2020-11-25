@@ -23,7 +23,7 @@ int commandeR(char *requete,Requete r){
     return err;
 }
 
-void getExtension(Requete r){
+void initExtension(Requete r){
     char com[256]="";
     char prev[256]="";
     printf("on a ici : %s\n",r->fichier);
@@ -66,7 +66,7 @@ Requete typeRequete(char *requete)
         free(r);
         exit(2);
     }
-    getExtension(r);
+    initExtension(r);
     printf("%s\n",r->extension);
     return r;
 }
@@ -98,4 +98,8 @@ size_t longeurFichier(Requete r){
         exit(4);
     }
     return size;
+}
+
+char *getExtension(Requete r){
+    return r->extension;
 }

@@ -21,7 +21,7 @@ int main()
 	message = Reception();
 	if (message != NULL)
 	{
-		printf("J'ai recu: %s\n", message);
+		printf("J'ai recu: \n%s\n", message);
 		free(message);
 	}
 	else
