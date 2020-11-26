@@ -30,6 +30,16 @@
 #define socklen_t int
 #endif
 
+/*
+typedef struct s_httpRequestStruct
+{
+    char *commande;
+    float protocoleVersion;
+    char *fichier;
+    char *extension;
+    //char *corps;
+} RequeteStruct;*/
+
 /* Variables cachees */
 
 /* le socket d'ecoute */

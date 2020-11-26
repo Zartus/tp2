@@ -8,6 +8,11 @@
 typedef struct s_httpRequestStruct *Requete;
 
 /**
+ *	@brief definition opaque de la strcuture requete
+ */
+typedef struct reponseRequeteS *Reponse;
+
+/**
  * @brief Initialisation.
  * Creation du serveur.
  * @return int renvoie 1 si à c'est bien passé 0 sinon
@@ -85,5 +90,13 @@ void freeRequete(Requete sRequest);
 size_t longeurFichier(Requete r);
 
 char *getExtension(Requete r);
+
+char *envoyerContenuFichier(Requete r);
+
+Reponse rep(Requete r);
+
+typedef int (*OperateFunctor)(char *);
+
+void envoyerReponse(Reponse rep,OperateFunctor where);
 
 #endif

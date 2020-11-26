@@ -5,17 +5,8 @@
 int main()
 {
     char *message = NULL;
-    char extension[256];
 
     Requete requete;
-    char test[256];
-    
-    //(void)requete;
-    /*requete = typeRequete("GET /fichier/index.html HTTP/1.1");
-    
-    affichage(requete);
-    printf("longeurfichier==%ld\n",longeurFichier(requete));
-    freeRequete(requete);*/
 
     Initialisation();
 
@@ -36,22 +27,28 @@ int main()
 
                 affichage(requete);
                 //stockage type requete
-				strcpy(extension,"Content type : text/");
-				strcat(extension,getExtension(requete));
-				strcat(extension,"\n");
+				//strcpy(extension,"Content type : text/");
+				//strcat(extension,getExtension(requete));
+				//strcat(extension,"\n");
                 //extension = getExtension(requete);
                 //stockage longueur fichier
-                sprintf(test,"%ld",longeurFichier(requete));
-				strcat(extension,"Content-length : ");
-				strcat(extension,test);
+                //sprintf(test,"%ld",longeurFichier(requete));
+				//strcat(extension,"Content-length : ");
+				//strcat(extension,test);
+                //strcat(extension,"\n");
+
+                Reponse b;
+                b=rep(requete);
                 
-                strcat(extension,"\n");
-                if (Emission(extension) != 1)
+                if (Emission("hop\n") != 1)
                 {
                     printf("Erreur d'emission\n");
                 }
 
+                envoyerReponse(b,Emission);
+                
                 freeRequete(requete);
+                
                 free(message);
             }
             else
