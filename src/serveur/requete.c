@@ -4,6 +4,8 @@
 #include <stdio.h>
 //#include <assert.h>
 
+//\r\n ? dans la requete
+//\n \n
 //faire traitement en fonction du code réponse
 //optimisation get ouvrir 2 fois une fois pour la taille et une fois pour le contenue pas ouf non ?
 //voir pour pas essayer de mettre des const
@@ -18,9 +20,55 @@ typedef struct reponseRequeteS
 {
     char *contentType;
     char *contentLength;
-    int numeroReponse;
     char *contenu;
+    int (*numeroReponse)(struct s_httpRequestStruct *, OperateFunctor);
 } reponseRequete;
+
+//mettre les réponses dans un autre fichier pas ouf la
+int envoyerReponse200HTML(Requete r, OperateFunctor envoyer)
+{
+    char envoie[256] = ""; //modifier here
+    sprintf(envoie, "HTTP/1.1 200 OK\nContent-Length: %s\nContent-Type: text/%s\n%s", r->rep->contentLength, r->rep->contentType, r->rep->contenu);
+    return envoyer(envoie);
+}
+
+int envoyerReponse400(Requete r, OperateFunctor envoyer)
+{
+    (void)r;
+    char envoie[256] = ""; //modifier here
+    sprintf(envoie, "HTTP/1.1 400 Bad Request\n");
+    return envoyer(envoie);
+}
+
+int envoyerReponse404(Requete r, OperateFunctor envoyer)
+{
+    (void)r;
+    char envoie[256] = ""; //modifier here
+    sprintf(envoie, "HTTP/1.1 404 Serveur Error\n");
+    return envoyer(envoie);
+}
+
+int envoyerReponse500(Requete r, OperateFunctor envoyer)
+{
+    (void)r;
+    char envoie[256] = ""; //modifier here
+    sprintf(envoie, "HTTP/1.1 500 Not Found\n");
+    return envoyer(envoie);
+}
+
+int envoyerReponse200JPG(Requete r, OperateFunctor envoyer)
+{
+    (void)r;
+    (void)envoyer;
+    return 1;
+}
+
+int envoyerReponse200ICO(Requete r, OperateFunctor envoyer)
+{
+    (void)r;
+    (void)envoyer;
+    return 1;
+}
 
 Requete initialisationStructure()
 {
@@ -30,7 +78,7 @@ Requete initialisationStructure()
     r->rep = malloc(sizeof(reponseRequete));
     r->rep->contentType = NULL;
     r->rep->contentLength = NULL;
-    r->rep->numeroReponse = 0; // modification here
+    r->rep->numeroReponse = NULL;
     r->rep->contenu = NULL;
     return r;
 }
@@ -70,10 +118,11 @@ int extraitFichier(char *requete, Requete r)
     //que faire en cas de juste /
     r->URL = malloc(sizeof(char) * (strlen(com) + 1));
     strcpy(r->URL, com);
-    
+
     return err;
 }
 
+//voir si on laisse int ici
 //mettre en place des define pour verifier le protocole plus simple
 //faire un truc avec le numero du protocle ?
 int verifProtocol(char *requete)
@@ -102,44 +151,40 @@ Requete annalyseRequete(char *requete)
 
     if (!verifProtocol(requete))
     {
-        fprintf(stderr, "400 Bad Request\n");//modification here
-        r->rep->numeroReponse=400;
-        free(r);
-        return NULL;
+        r->rep->numeroReponse = envoyerReponse400;
+        //free(r);
+        //renvoyer NULL ?
+        return r;
     }
     /*extraction de la commande*/
     if (extractCommande(requete, r) != 1)
     {
-        fprintf(stderr, "400 Bad Request\n");//modification here
-        r->rep->numeroReponse=400;
-        free(r);
-        return NULL;
+        r->rep->numeroReponse = envoyerReponse400;
+        //free(r);
+        //renvoyer NULL?
+        return r;
     }
 
-    if (extraitFichier(requete, r) != 2)
-    {
-        fprintf(stderr, "404 not found\n");//modification here
-        //possiblement enlever ca d'ici
-        r->rep->numeroReponse=404;
-        free(r);
-        return NULL;
-    }
+    extraitFichier(requete, r);
 
     return r;
 }
+
 //renvoie 1 si l'envoie c'est bien passé sinon 0 à voir la gestion d'erreur qu'on peut
 //mettre en place
 int repondre(Requete r, OperateFunctor envoyer)
 {
     //verifier que r existe assert + verif ou que assert
     //assert();
-    int err=0;
+    int err = 0;
     if (r->commande != NULL)
     {
         r->commande(r);
     }
 
-    err=envoyerReponse(r, envoyer);
+    //gestion du retour ?
+    err = r->rep->numeroReponse(r, envoyer);
+
     //freeRequete(r);
     return err;
 }
@@ -150,9 +195,9 @@ size_t longeurFichier(Requete r)
     int size = 0;
     if ((file = fopen(r->URL, "r")) == NULL)
     {
-        //ici mettre en place erreur 404
         perror("pas ouvert");
-        r->rep->numeroReponse=404;
+        r->rep->numeroReponse = envoyerReponse404;
+        return 0;
     }
 
     fseek(file, 0, SEEK_END);
@@ -161,8 +206,9 @@ size_t longeurFichier(Requete r)
 
     if (fclose(file) == EOF)
     {
-        perror("probleme fermeture URL");
-        r->rep->numeroReponse=500;
+        perror("probleme fermeture URL1");
+        r->rep->numeroReponse = envoyerReponse500;
+        return 0;
     }
 
     return size;
@@ -174,7 +220,6 @@ char *getExtension(Requete r)
     char *content = NULL;
     char com[256] = "";
     char prev[256] = "";
-    printf("on a ici : %s\n", r->URL);
     sscanf(r->URL, "%[^.].%s", com, prev);
     //+4 car EOF fait 4
     content = malloc(sizeof(char) * (strlen(prev) + 4));
@@ -185,65 +230,34 @@ char *getExtension(Requete r)
 char *envoyerContenuURL(Requete r)
 {
     //peut etre truc à revoir ici +1 +4 ??
-    char *content = malloc(sizeof(char) * (longeurFichier(r)+1));
+    char *content = malloc(sizeof(char) * (longeurFichier(r) + 1));
     FILE *fichier;
     char ch;
     int i = 0;
     //Ouverture du URL à copier et affichage d'une erreur si impossible
     if ((fichier = fopen(r->URL, "rt")) == NULL)
     {
-        perror("Probleme à l'ouverture de l'URL : ");
-        r->rep->numeroReponse=404;
+        perror("Probleme à l'ouverture de l'URL 2: ");
+        r->rep->numeroReponse = envoyerReponse404;
+        return NULL;
     }
-    
+
     while ((ch = fgetc(fichier)) != EOF)
     {
         content[i] = ch;
         ++i;
     }
 
-    content[i]='\0';
+    content[i] = '\0';
 
     if (fclose(fichier) == EOF)
     {
         perror("probleme fermeture URL");
-        r->rep->numeroReponse=500;
+        r->rep->numeroReponse = envoyerReponse500;
+        return NULL;
     }
 
     return content;
-}
-
-int envoyerReponse200HTML(Requete r,OperateFunctor envoyer){
-    char envoie[256];//modifier here
-    sprintf(envoie, "HTTP/1.1 200 OK\nContent-Length: %s\nContent-Type: text/%s\n%s",r->rep->contentLength,r->rep->contentType,r->rep->contenu);
-    return envoyer(envoie);
-}
-
-int envoyerReponse400(Requete r,OperateFunctor envoyer){
-    char envoie[256];//modifier here
-    sprintf(envoie, "HTTP/1.1 400 Bad Request\nContent-Length: %s\nContent-Type: text/%s\n%s",r->rep->contentLength,r->rep->contentType,r->rep->contenu);
-    return envoyer(envoie);
-}
-
-int envoyerReponse404(Requete r,OperateFunctor envoyer){
-    (void)r;
-    (void)envoyer;
-    return 1;
-}
-
-int envoyerReponse500(Requete r,OperateFunctor envoyer){
-    (void)r;
-    (void)envoyer;
-    return 1;
-}
-
-int envoyerReponse(Requete r, OperateFunctor envoyer)
-{
-    if(r->rep->numeroReponse==200 && !strcmp(r->rep->contentType,"html")){
-        return envoyerReponse200HTML(r,envoyer);
-    }
-    
-    return 1;
 }
 
 void freeRep(reponseRequete *rep)
@@ -266,9 +280,12 @@ void commandeGet(Requete r)
     r->rep->contentType = getExtension(r);
 
     char *envoie = malloc(sizeof(char) * 50); //modication here
-    sprintf(envoie, "%ld",longeurFichier(r));
+    sprintf(envoie, "%ld", longeurFichier(r));
 
     r->rep->contentLength = envoie;
-    r->rep->contenu = envoyerContenuURL(r);
-    r->rep->numeroReponse = 200;
+    //voir pour pas utiliser code de retour non ? pas meilleur
+    if ((r->rep->contenu = envoyerContenuURL(r)) != NULL)
+    {
+        r->rep->numeroReponse = envoyerReponse200HTML;
+    }
 }

@@ -12,7 +12,7 @@ int main()
 		return 1;
 	}
 
-	if (Emission("GET /fichier/index.html HTTP/1.1\r\n") != 1)
+	if (Emission("GET /fichier/index.html HTTP/1.1 \r\n") != 1)
 	{
 		printf("Erreur d'emission\n");
 		return 1;
