@@ -6,8 +6,13 @@ int main()
 {
     char *message = NULL;
 
-    Requete requete;
+    Requete requete=NULL;
+    
+    //requete = annalyseRequete("GET /index.html HTTP/1.1");
+    //envoyerReponse(requete,Emission);
 
+    //(void)requete;
+    
     Initialisation();
 
     while (1)
@@ -23,32 +28,13 @@ int main()
             if (message != NULL)
             {
                 printf("J'ai recu: %s\n", message);
-                requete = typeRequete(message);
-
-                affichage(requete);
-                //stockage type requete
-				//strcpy(extension,"Content type : text/");
-				//strcat(extension,getExtension(requete));
-				//strcat(extension,"\n");
-                //extension = getExtension(requete);
-                //stockage longueur fichier
-                //sprintf(test,"%ld",longeurFichier(requete));
-				//strcat(extension,"Content-length : ");
-				//strcat(extension,test);
-                //strcat(extension,"\n");
-
-                Reponse b;
-                b=rep(requete);
+                requete = annalyseRequete(message);
+                (void)requete;
                 
-                if (Emission("hop\n") != 1)
-                {
-                    printf("Erreur d'emission\n");
+                if(repondre(requete,Emission)!=1){
+                    printf("Erreur d'emission");
                 }
 
-                envoyerReponse(b,Emission);
-                
-                freeRequete(requete);
-                
                 free(message);
             }
             else
