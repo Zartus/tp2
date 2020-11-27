@@ -74,3 +74,7 @@ mrproper: clean
 #Permet de générer la documentation
 doc: include/*
 	@doxygen documentation/TP2
+
+tests :
+	@$(BASH) test/test.sh
+	#$(EXEC)

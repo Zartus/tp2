@@ -30,7 +30,7 @@ Requete initialisationStructure()
     r->rep = malloc(sizeof(reponseRequete));
     r->rep->contentType = NULL;
     r->rep->contentLength = NULL;
-    r->rep->numeroReponse = 0; // here
+    r->rep->numeroReponse = 0; // modification here
     r->rep->contenu = NULL;
     return r;
 }
@@ -152,7 +152,7 @@ size_t longeurFichier(Requete r)
     {
         //ici mettre en place erreur 404
         perror("pas ouvert");
-        exit(3);
+        r->rep->numeroReponse=404;
     }
 
     fseek(file, 0, SEEK_END);
@@ -162,7 +162,7 @@ size_t longeurFichier(Requete r)
     if (fclose(file) == EOF)
     {
         perror("probleme fermeture URL");
-        exit(4);
+        r->rep->numeroReponse=500;
     }
 
     return size;
@@ -182,16 +182,6 @@ char *getExtension(Requete r)
     return content;
 }
 
-//modification ici
-void fermetureURL(FILE *f)
-{
-    if (fclose(f) == EOF)
-    {
-        perror("Probleme à la fermeture du URL");
-        exit(-3);
-    }
-}
-
 char *envoyerContenuURL(Requete r)
 {
     //peut etre truc à revoir ici +1 +4 ??
@@ -203,7 +193,7 @@ char *envoyerContenuURL(Requete r)
     if ((fichier = fopen(r->URL, "rt")) == NULL)
     {
         perror("Probleme à l'ouverture de l'URL : ");
-        exit(-1);
+        r->rep->numeroReponse=404;
     }
     
     while ((ch = fgetc(fichier)) != EOF)
@@ -212,8 +202,13 @@ char *envoyerContenuURL(Requete r)
         ++i;
     }
 
-    fermetureURL(fichier);
     content[i]='\0';
+
+    if (fclose(fichier) == EOF)
+    {
+        perror("probleme fermeture URL");
+        r->rep->numeroReponse=500;
+    }
 
     return content;
 }
@@ -226,7 +221,7 @@ int envoyerReponse200HTML(Requete r,OperateFunctor envoyer){
 
 int envoyerReponse400(Requete r,OperateFunctor envoyer){
     char envoie[256];//modifier here
-    sprintf(envoie, "HTTP/1.1 200 OK\nContent-Length: %s\nContent-Type: text/%s\n%s",r->rep->contentLength,r->rep->contentType,r->rep->contenu);
+    sprintf(envoie, "HTTP/1.1 400 Bad Request\nContent-Length: %s\nContent-Type: text/%s\n%s",r->rep->contentLength,r->rep->contentType,r->rep->contenu);
     return envoyer(envoie);
 }
 
