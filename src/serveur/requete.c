@@ -30,7 +30,7 @@ Requete initialisationStructure()
     r->rep = malloc(sizeof(reponseRequete));
     r->rep->contentType = NULL;
     r->rep->contentLength = NULL;
-    r->rep->numeroReponse = 0; //modification here
+    r->rep->numeroReponse = 0; // here
     r->rep->contenu = NULL;
     return r;
 }
@@ -182,6 +182,7 @@ char *getExtension(Requete r)
     return content;
 }
 
+//modification ici
 void fermetureURL(FILE *f)
 {
     if (fclose(f) == EOF)
@@ -194,7 +195,7 @@ void fermetureURL(FILE *f)
 char *envoyerContenuURL(Requete r)
 {
     //peut etre truc à revoir ici +1 +4 ??
-    char *content = malloc(sizeof(char) * (longeurFichier(r)+1+4));
+    char *content = malloc(sizeof(char) * (longeurFichier(r)+1));
     FILE *fichier;
     char ch;
     int i = 0;
@@ -212,7 +213,7 @@ char *envoyerContenuURL(Requete r)
     }
 
     fermetureURL(fichier);
-    content[i+1]='\0';
+    content[i]='\0';
 
     return content;
 }

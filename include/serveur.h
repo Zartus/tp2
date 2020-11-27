@@ -96,4 +96,8 @@ int repondre(Requete r,OperateFunctor envoyer);
 
 int envoyerReponse(Requete r,OperateFunctor where);
 
+#define codeHTML400 "code html ici"
+
+#define codeHTML500 "code html ici"
+
 #endif
