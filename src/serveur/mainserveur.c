@@ -1,6 +1,6 @@
+#include "serveur.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include "serveur.h"
 #include <string.h>
 
 int main()
@@ -8,7 +8,7 @@ int main()
     char *message = NULL;
 
     Requete requete = NULL;
-    
+
     Initialisation();
 
     while (1)

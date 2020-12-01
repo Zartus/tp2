@@ -3,6 +3,7 @@ OBJDIR = obj
 BINDIR = bin
 SRCDIRC = src/client
 SRCDIRS = src/serveur
+SRCDIRH = src/protocoleHTTP
 
 CC=gcc
 CFLAGS=-Wall -I$(INCLUDE) -Werror -pedantic -Wextra
@@ -26,6 +27,10 @@ EXECS=$(BINDIR)/serveurExec
 SRCS= $(wildcard $(SRCDIRS)/*.c)
 OBJS= $(SRCS:.c=.o)
 
+#apiHTTP
+SRCH= $(wildcard $(SRCDIRH)/*.c)
+OBJH= $(SRCH:.c=.o)
+
 #compile le client et le serveur
 all: client serveur
 
@@ -41,9 +46,10 @@ $(EXECC):  $(OBJC)
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@mv $(SRCDIRC)/*.o obj
 
-$(EXECS): $(OBJS)
+$(EXECS): $(OBJS) $(OBJH)
 	@$(CC) -o $@ $^ $(LDFLAGS)
 	@mv $(SRCDIRS)/*.o obj
+	@mv $(SRCDIRH)/*.o obj
 
 %.o: %.c
 	@$(CC) -o  $@ -c $< $(CFLAGS)
@@ -65,7 +71,7 @@ endif
 
 #Permet de supprimer le fichier obj qui contient les .o
 clean:
-	@rm -rf $(OBJDIR) $(SRCDIRC)/*.o $(SRCDIRS)/*.o
+	@rm -rf $(OBJDIR) $(SRCDIRC)/*.o $(SRCDIRS)/*.o $(SRCDIRH)/*.o
 
 #Permet de supprimer tout ce qui à été générer
 mrproper: clean

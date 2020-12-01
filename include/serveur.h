@@ -1,12 +1,6 @@
-#include <stddef.h>
 #ifndef __SERVEUR_H__
 #define __SERVEUR_H__
-
-/**
- *	@brief definition opaque de la strcuture requete
- */
-typedef struct s_httpRequestStruct *Requete;
-
+#include "protocoleHTTP.h"
 /**
  * @brief Initialisation.
  * Creation du serveur.
@@ -76,29 +70,6 @@ void TerminaisonClient();
  */
 void Terminaison();
 
-Requete annalyseRequete(char *requete);
-
-void affichage(Requete r);
-
-void freeRequete(Requete sRequest);
-
-size_t longeurFichier(Requete r);
-
-char *getExtension(Requete r);
-
-char *envoyerContenuFichier(Requete r);
-
-void commandeGet(Requete r);
-
-typedef int (*OperateFunctor)(char *);
-
-int repondre(Requete r,OperateFunctor envoyer);
-
-int envoyerReponse(Requete r,OperateFunctor where);
-
-#define codeHTML400 "code html ici"
-
-#define codeHTML500 "code html ici"
 
 
 #endif
