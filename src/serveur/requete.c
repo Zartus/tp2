@@ -12,7 +12,7 @@
 typedef struct s_httpRequestStruct
 {
     void (*commande)(struct s_httpRequestStruct *);
-    char *URL;
+    char *fichier;
     struct reponseRequeteS *rep;
 } RequeteStruct;
 
@@ -74,7 +74,7 @@ Requete initialisationStructure()
 {
     Requete r = malloc(sizeof(RequeteStruct));
     r->commande = NULL;
-    r->URL = NULL;
+    r->fichier = NULL;
     r->rep = malloc(sizeof(reponseRequete));
     r->rep->contentType = NULL;
     r->rep->contentLength = NULL;
@@ -116,8 +116,8 @@ int extraitFichier(char *requete, Requete r)
     char prev[256] = "";
     int err = sscanf(requete, "%s /%s HTTP/", prev, com);
     //que faire en cas de juste /
-    r->URL = malloc(sizeof(char) * (strlen(com) + 1));
-    strcpy(r->URL, com);
+    r->fichier = malloc(sizeof(char) * (strlen(com) + 1));
+    strcpy(r->fichier, com);
 
     return err;
 }
@@ -193,7 +193,7 @@ size_t longeurFichier(Requete r)
 {
     FILE *file;
     int size = 0;
-    if ((file = fopen(r->URL, "r")) == NULL)
+    if ((file = fopen(r->fichier, "r")) == NULL)
     {
         perror("pas ouvert");
         r->rep->numeroReponse = envoyerReponse404;
@@ -220,24 +220,24 @@ char *getExtension(Requete r)
     char *content = NULL;
     char com[256] = "";
     char prev[256] = "";
-    sscanf(r->URL, "%[^.].%s", com, prev);
+    sscanf(r->fichier, "%[^.].%s", com, prev);
     //+4 car EOF fait 4
     content = malloc(sizeof(char) * (strlen(prev) + 4));
     strcpy(content, prev);
     return content;
 }
 
-char *envoyerContenuURL(Requete r)
+char *envoyerContenuFichier(Requete r)
 {
     //peut etre truc à revoir ici +1 +4 ??
     char *content = malloc(sizeof(char) * (longeurFichier(r) + 1));
     FILE *fichier;
     char ch;
     int i = 0;
-    //Ouverture du URL à copier et affichage d'une erreur si impossible
-    if ((fichier = fopen(r->URL, "rt")) == NULL)
+    //Ouverture du fichier à copier et affichage d'une erreur si impossible
+    if ((fichier = fopen(r->fichier, "rt")) == NULL)
     {
-        perror("Probleme à l'ouverture de l'URL 2: ");
+        perror("Probleme à l'ouverture de l'fichier 2: ");
         r->rep->numeroReponse = envoyerReponse404;
         return NULL;
     }
@@ -252,7 +252,7 @@ char *envoyerContenuURL(Requete r)
 
     if (fclose(fichier) == EOF)
     {
-        perror("probleme fermeture URL");
+        perror("probleme fermeture fichier");
         r->rep->numeroReponse = envoyerReponse500;
         return NULL;
     }
@@ -270,7 +270,7 @@ void freeRep(reponseRequete *rep)
 
 void freeRequete(Requete sRequest)
 {
-    free(sRequest->URL);
+    free(sRequest->fichier);
     freeRep(sRequest->rep);
     free(sRequest);
 }
@@ -284,7 +284,7 @@ void commandeGet(Requete r)
 
     r->rep->contentLength = envoie;
     //voir pour pas utiliser code de retour non ? pas meilleur
-    if ((r->rep->contenu = envoyerContenuURL(r)) != NULL)
+    if ((r->rep->contenu = envoyerContenuFichier(r)) != NULL)
     {
         r->rep->numeroReponse = envoyerReponse200HTML;
     }
