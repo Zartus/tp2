@@ -27,8 +27,9 @@ typedef struct reponseRequeteS
 //mettre les réponses dans un autre fichier pas ouf la
 int envoyerReponse200HTML(Requete r, OperateFunctor envoyer)
 {
-    char envoie[256] = ""; //modifier here
-    sprintf(envoie, "HTTP/1.1 200 OK\nContent-Length: %s\nContent-Type: text/%s\n%s", r->rep->contentLength, r->rep->contentType, r->rep->contenu);
+    //modifier taille buffer
+    char envoie[1024] = "";
+    sprintf(envoie, "HTTP/1.1 200 OK\r\nContent-Length: %s\r\nContent-Type: text/%s\r\n\r\n%s", r->rep->contentLength, r->rep->contentType, r->rep->contenu);
     return envoyer(envoie);
 }
 
@@ -36,7 +37,7 @@ int envoyerReponse400(Requete r, OperateFunctor envoyer)
 {
     (void)r;
     char envoie[256] = ""; //modifier here
-    sprintf(envoie, "HTTP/1.1 400 Bad Request\n");
+    sprintf(envoie, "HTTP/1.1 400 Bad Request");
     return envoyer(envoie);
 }
 
@@ -44,7 +45,7 @@ int envoyerReponse404(Requete r, OperateFunctor envoyer)
 {
     (void)r;
     char envoie[256] = ""; //modifier here
-    sprintf(envoie, "HTTP/1.1 404 Serveur Error\n");
+    sprintf(envoie, "HTTP/1.1 404 Serveur Error");
     return envoyer(envoie);
 }
 
@@ -52,7 +53,7 @@ int envoyerReponse500(Requete r, OperateFunctor envoyer)
 {
     (void)r;
     char envoie[256] = ""; //modifier here
-    sprintf(envoie, "HTTP/1.1 500 Not Found\n");
+    sprintf(envoie, "HTTP/1.1 500 Not Found");
     return envoyer(envoie);
 }
 

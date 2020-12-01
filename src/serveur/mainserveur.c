@@ -2,16 +2,12 @@
 #include <stdlib.h>
 #include "serveur.h"
 #include <string.h>
+
 int main()
 {
     char *message = NULL;
 
-    Requete requete=NULL;
-    
-    //requete = annalyseRequete("GET /index.html HTTP/1.1");
-    //envoyerReponse(requete,Emission);
-
-    //(void)requete;
+    Requete requete = NULL;
     
     Initialisation();
 
@@ -29,13 +25,14 @@ int main()
             {
                 printf("J'ai recu: %s\n", message);
                 requete = annalyseRequete(message);
-                (void)requete;
-                
-                if(repondre(requete,Emission)!=1){
+
+                if (repondre(requete, Emission) != 1)
+                {
                     printf("Erreur d'emission");
                 }
 
                 free(message);
+
             }
             else
             {
