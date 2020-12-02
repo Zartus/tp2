@@ -1,6 +1,7 @@
 #ifndef __SERVEUR_H__
 #define __SERVEUR_H__
 #include "protocoleHTTP.h"
+//pour l'extension pointer sur le bonne element dans le file !
 /**
  * @brief Initialisation.
  * Creation du serveur.

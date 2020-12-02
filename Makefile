@@ -81,6 +81,6 @@ mrproper: clean
 doc: include/*
 	@doxygen documentation/TP2
 
-tests :
-	@$(BASH) test/test.sh
+#tests :
+#	@$(BASH) test/test.sh
 	#$(EXEC)

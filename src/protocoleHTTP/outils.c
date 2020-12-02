@@ -72,19 +72,20 @@ char *getExtension(RequeteStruct *r)
     return content;
 }
 
-char *envoyerContenuFichier(RequeteStruct *r)
+char *envoyerContenuFichierText(RequeteStruct *r)
 {
     //peut etre truc à revoir ici +1 +4 ??
     char *content = malloc(sizeof(char) * (longeurFichier(r) + 1));
     FILE *fichier;
     char ch;
     int i = 0;
-    printf("notre fichier imporatn :%s\n", r->fichier);
+
     //Ouverture du fichier à copier et affichage d'une erreur si impossible
     if ((fichier = fopen(r->fichier, "rt")) == NULL)
     {
         perror("Probleme à l'ouverture de l'fichier 2: ");
         r->rep->numeroReponse = envoyerReponse404;
+
         return NULL;
     }
 
@@ -95,6 +96,67 @@ char *envoyerContenuFichier(RequeteStruct *r)
     }
 
     content[i] = '\0';
+
+    if (!fermetureFichier(fichier))
+    {
+        perror("probleme fermeture fichier");
+        r->rep->numeroReponse = envoyerReponse500;
+        return NULL;
+    }
+
+    return content;
+}
+
+//vois si pas probleme du à taille 0 me fier à la réponse !
+size_t longeurFichierBinaire(RequeteStruct *r)
+{
+    FILE *file;
+    size_t size = 0; //ir gerer erreur -1
+    if ((file = ouvertureFichier(r->fichier, "rb")) == NULL)
+    {
+        perror("ouverture du fichier rater\n");
+        r->rep->numeroReponse = envoyerReponse404;
+        return 0;
+    }
+    //on se positionne à la fin
+    fseek(file, 0, SEEK_END);
+    //on regarde la posiition
+    size = ftell(file);
+    printf("la taille est de : %ld\n\n\n\n", size);
+    if (!fermetureFichier(file))
+    {
+        perror("probleme fermeture du fichier\n");
+        r->rep->numeroReponse = envoyerReponse500;
+        return 0;
+    }
+
+    return size;
+}
+
+char *envoyerContenuFichierBinaire(RequeteStruct *r)
+{
+    //peut etre truc à revoir ici +1 +4 ??
+
+    FILE *fichier;
+
+    //Ouverture du fichier à copier et affichage d'une erreur si impossible
+    if ((fichier = fopen(r->fichier, "r+b")) == NULL)
+    {
+        perror("Probleme à l'ouverture de l'fichier 2: ");
+        r->rep->numeroReponse = envoyerReponse404;
+        return NULL;
+    }
+
+    fseek(fichier, 0, SEEK_END); //go to end
+    //char *buffer = malloc(size * sizeof(char)); //allocation dynamique
+    int taille = ftell(fichier);
+    printf("taille");
+    char *content = (char *)malloc(taille * sizeof(char(*)));
+    fseek(fichier, 0, SEEK_SET);        //go to beg.
+    if(fread(content, taille, 1, fichier)){
+        printf("bonjour");
+    } //read into buffer
+    r->rep->contentLength=taille;
 
     if (!fermetureFichier(fichier))
     {

@@ -1,7 +1,4 @@
-//#include "serveur.h"
 #include "protocoleHTTP.h"
-
-//#include <assert.h>
 
 //\r\n ? dans la requete
 //\n \n
@@ -18,13 +15,11 @@
  */
 int extractCommande(char *requete, RequeteStruct *r)
 {
-    char possibilite[256] = "";
+    char possibilite[LONGUEUR_TAMPON] = "";
     int err = sscanf(requete, "%s /", possibilite);
     if (err == 1)
     {
-        /*on va chercher la bonne commande*/
-        /*pour ajouter commande c'est ici*/
-        if (!strcmp(possibilite, "GET"))
+        if (!strcmp(possibilite, "GET"))//les differentes commande ici
         {
             r->commande = commandeGet;
         }
@@ -37,44 +32,36 @@ int extractCommande(char *requete, RequeteStruct *r)
 }
 
 //renomer variable
+//que faire en cas de juste /
 int extraitFichier(char *requete, RequeteStruct *r)
 {
     char com[256] = "";
     char prev[256] = "";
+    char path[500] = "";//voir avec make Debug
     int err = sscanf(requete, "%s /%s HTTP/", prev, com);
-    //que faire en cas de juste /
-    printf("com avant :%s\n", com);
-    sprintf(prev, "fichier/%s", com); //permet qu'on aille directement dans le dossier fichier
-    printf("com apres :%s\n", prev);
-    r->fichier = malloc(sizeof(char) * (strlen(prev) + 1));
-    strcpy(r->fichier, prev);
-    printf("notre fichier c'est :%sfin\n", r->fichier);
+    
+    sprintf(path, "fichier/%s", com);
+    r->fichier = malloc(sizeof(char) * (strlen(path) + 1));
+    strcpy(r->fichier, path);
+
     return err;
 }
 
-//voir si on laisse int ici
-//mettre en place des define pour verifier le protocole plus simple
-//faire un truc avec le numero du protocle ?
 int verifProtocol(char *requete)
 {
-    char rep[256] = ""; //modification here
-    char aze[256] = "";
-    char aze2[256] = "";
-    char all[256] = "";
+
+    char verif[4][256]={"","","",""};
     int err = 0;
-    err = sscanf(requete, "%s /%s HTTP/%s %[^\n]", aze, aze2, rep, all);
-    //modification here
-    if (err == 3 && (!strcmp(rep, "0.9") || !strcmp(rep, "1.0") || !strcmp(rep, "1.1") || !strcmp(rep, "2.0")))
+    err = sscanf(requete, "%s /%s HTTP/%s %[^\n]", verif[0], verif[1], verif[2], verif[3]);
+
+    if (err == 3 && (!strcmp(verif[2], "0.9") || !strcmp(verif[2], "1.0") || !strcmp(verif[2], "1.1") || !strcmp(verif[2], "2.0")))
     {
-        //format bon
-        return 1;
+        return 1;//format bon
     }
-    //format pas bon
-    return 0;
+    
+    return 0;//format pas bon
 }
 
-//possiblement mettre en place une grande initilisaiton pour rendre le code plus propre
-//mettre en place des defines
 RequeteStruct *annalyseRequete(char *requete)
 {
     /*Allocation de la mémoire dans la heap*/
@@ -97,6 +84,6 @@ RequeteStruct *annalyseRequete(char *requete)
     }
 
     extraitFichier(requete, r);
-
+    printf("le fichier ==%s\n",r->fichier);
     return r;
 }

@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
+#include "serveur.h"
+
+#define LONGUEUR_TAMPON 4096
 //possiblement faire 2 .h car probleme sur les acces
 
 /**
@@ -22,7 +26,7 @@ typedef struct s_httpRequestStruct
 typedef struct reponseRequeteS
 {
     char *contentType;
-    char *contentLength;
+    size_t contentLength;
     char *contenu;
     int (*numeroReponse)(struct s_httpRequestStruct *, OperateFunctor);
 } reponseRequete;
@@ -76,6 +80,7 @@ void freeRequete(RequeteStruct* sRequest);
  */
 size_t longeurFichier(RequeteStruct* r);
 
+size_t longeurFichierBinaire(RequeteStruct *r);
 /**
  * @brief Permet d'obtenir l'extension d'un fichier
  * 
@@ -85,12 +90,20 @@ size_t longeurFichier(RequeteStruct* r);
 char *getExtension(RequeteStruct* r);
 
 /**
- * @brief Permet d'obtenir le contenue du fichier 
+ * @brief Permet d'obtenir le contenue du fichier text 
  * présent dans la requete passer en parametre
  * @param r la requete qui contient le fichier
  * @return char* retourne une pointeur vers le contenue du fichier
  */
-char *envoyerContenuFichier(RequeteStruct* r);
+char *envoyerContenuFichierText(RequeteStruct* r);
+
+/**
+ * @brief Permet d'obtenir le contenue du binaire
+ * présent dans la requete passer en parametre
+ * @param r la requete qui contient le fichier
+ * @return char* retourne une pointeur vers le contenue du fichier
+ */
+char *envoyerContenuFichierBinaire(RequeteStruct* r);
 
 /**
  * @brief Ce que doit réaliser la commande GET
@@ -116,6 +129,15 @@ int repondre(RequeteStruct* r,OperateFunctor envoyer);
  * @return int retourne 1 si le Functor c'est bien passé sinon 0
  */
 int envoyerReponse200HTML(RequeteStruct *r, OperateFunctor envoyer);
+
+/**
+ * @brief Permet d'envoyer la réponse HTTP 200
+ * 
+ * @param r La requete à la quelle on doit répondre
+ * @param envoyer Le functor qui nous permet de répondre
+ * @return int retourne 1 si le Functor c'est bien passé sinon 0
+ */
+int envoyerReponse200JPG(RequeteStruct *r, OperateFunctor envoyer);
 
 /**
  * @brief Permet d'envoyer la réponse HTTP 400
@@ -144,4 +166,5 @@ int envoyerReponse404(RequeteStruct* r, OperateFunctor envoyer);
  */
 int envoyerReponse500(RequeteStruct* r, OperateFunctor envoyer);
 
+int envoyerReponse200ICO(RequeteStruct *r, OperateFunctor envoyer);
 #endif
