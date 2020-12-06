@@ -33,29 +33,41 @@ int fermetureFichier(FILE *f)
     return 1;
 }
 
-//vois si pas probleme du à taille 0 me fier à la réponse !
+
 size_t longeurFichier(RequeteStruct *r)
 {
+    //les diffentes variables
     FILE *file;
-    size_t size = 0; //ir gerer erreur -1
-    if ((file = ouvertureFichier(r->fichier, "r")) == NULL)
+    /*size_t car un fichier ne peut pas étre de taille négative*/
+    /*donc on peut monter beaucoup plus haut en taille*/
+    size_t size = 0; 
+
+    /*On ouvre le fichier présent dans la requete en lecture*/
+    if ((file = fopen(r->fichier, "rb")) == NULL)
     {
+        /*si le fichier n'arrive pas à étre ouvert*/
+        /*existe pas ou pas acces*/
         perror("ouverture du fichier rater\n");
+        /*on envoie au client l'erreur 404*/
         r->rep->numeroReponse = envoyerReponse404;
         return 0;
     }
-    //on se positionne à la fin
+    //on se positionne à la fin du fichier
     fseek(file, 0, SEEK_END);
-    //on regarde la posiition
+    //on regarde la position à la fin
     size = ftell(file);
 
-    if (!fermetureFichier(file))
+    /*on ferme le fichier*/
+    if (fclose(file)==EOF)
     {
+        /*si on arrive pas à fermer le fichier erreur serveur*/
+        /*car il y a possiblement d'autre erruer que celle ci*/
+        /*donc prefere envoyer au client une erreur 500*/
         perror("probleme fermeture du fichier\n");
         r->rep->numeroReponse = envoyerReponse500;
         return 0;
     }
-
+    /*si tout c'est bien passé on retourne la taille du fichier*/
     return size;
 }
 

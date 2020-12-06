@@ -1,5 +1,12 @@
 #include "protocoleHTTP.h"
 
+void modeleSetError(RequeteStruct *r,char *erreur){
+    strcpy(r->fichier,erreur);
+    r->rep->contenu = envoyerContenuFichierText(r);
+    r->rep->contentType = getExtension(r);
+    r->rep->contentLength = longeurFichier(r);
+}
+
 //modifier la taille du buffer partout
 int envoyerReponse200HTML(RequeteStruct *r, OperateFunctor envoyer)
 {
@@ -33,10 +40,14 @@ int envoyerReponse200ICO(RequeteStruct *r, OperateFunctor envoyer)
 
 int envoyerReponse400(RequeteStruct *r, OperateFunctor envoyer)
 {
+    (void)envoyer;
     (void)r;
-    char envoie[1024] = ""; //modifier here
-    sprintf(envoie, "HTTP/1.1 400 Bad Request\r\nContent-Length: %ld\r\nContent-Type: text/%s\r\n\r\n%s", r->rep->contentLength, r->rep->contentType, r->rep->contenu);
-    return envoyer(envoie);
+    printf("here");
+    //char envoie[1024] = "";
+    //modeleSetError(r,"fichier/400.html");
+    //sprintf(envoie, "HTTP/1.1 400 Bad Request\r\nContent-Length: %ld\r\nContent-Type: text/%s\r\n\r\n%s", r->rep->contentLength, r->rep->contentType, r->rep->contenu);
+    //return envoyer(envoie);
+    return 1;
 }
 
 int envoyerReponse404(RequeteStruct *r, OperateFunctor envoyer)
@@ -44,10 +55,11 @@ int envoyerReponse404(RequeteStruct *r, OperateFunctor envoyer)
     //modifier taille buffer
     printf("here \n\n\n");
     char envoie[1024] = "";
-    strcpy(r->fichier, "fichier/404.html");
-    r->rep->contenu = envoyerContenuFichierText(r);
-    r->rep->contentType = getExtension(r);
-    r->rep->contentLength = longeurFichier(r);
+    modeleSetError(r,"fichier/404.html");
+    //strcpy(r->fichier, "fichier/404.html");
+    //r->rep->contenu = envoyerContenuFichierText(r);
+    //r->rep->contentType = getExtension(r);
+    //r->rep->contentLength = longeurFichier(r);
 
     sprintf(envoie, "HTTP/1.1 404 Not Found\r\nContent-Length: %ld\r\nContent-Type: text/%s\r\n\r\n%s", r->rep->contentLength, r->rep->contentType, r->rep->contenu);
     return envoyer(envoie);

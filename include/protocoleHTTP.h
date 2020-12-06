@@ -167,4 +167,7 @@ int envoyerReponse404(RequeteStruct* r, OperateFunctor envoyer);
 int envoyerReponse500(RequeteStruct* r, OperateFunctor envoyer);
 
 int envoyerReponse200ICO(RequeteStruct *r, OperateFunctor envoyer);
+
+void test(char *requete);
+
 #endif

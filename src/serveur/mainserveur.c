@@ -7,10 +7,8 @@ int main()
 {
     char *message = NULL;
 
-    Requete requete = NULL;
-
     Initialisation();
-
+    Requete r;
     while (1)
     {
         int fini = 0;
@@ -24,12 +22,9 @@ int main()
             if (message != NULL)
             {
                 printf("J'ai recu: %s\n", message);
-                requete = annalyseRequete(message);
-
-                if (repondre(requete, Emission) != 1)
-                {
-                    printf("Erreur d'emission");
-                }
+                //test(message);
+                r=annalyseRequete(message);
+                repondre(r,Emission);
 
                 free(message);
 
