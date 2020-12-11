@@ -14,7 +14,7 @@
  * @brief functor quoi doit respecter le format suivant int functor(char* something)
  * utiliser ici pour émission mais peut etre utiliser pour d'autre chose put ...
  */
-typedef int (*OperateFunctor)(char *);
+typedef int (*OperateFunctor)(char *,size_t,int);
 
 typedef struct s_httpRequestStruct
 {
@@ -80,7 +80,6 @@ void freeRequete(RequeteStruct* sRequest);
  */
 size_t longeurFichier(RequeteStruct* r);
 
-size_t longeurFichierBinaire(RequeteStruct *r);
 /**
  * @brief Permet d'obtenir l'extension d'un fichier
  * 

@@ -1,11 +1,5 @@
 #include "protocoleHTTP.h"
 
-//\r\n ? dans la requete
-//\n \n
-//faire traitement en fonction du code réponse
-//optimisation get ouvrir 2 fois une fois pour la taille et une fois pour le contenue pas ouf non ?
-//voir pour pas essayer de mettre des const
-
 /**
  * @brief Permet d'extraire la commande d'une requete HTTP
  * 
@@ -52,7 +46,7 @@ void extraitFichier(char *requete, RequeteStruct *r)
     char path[1024] = "";
     
     /*On utilise sscanf pour extraire de la requete comme nous savons que le format est bon*/
-    sscanf(requete, "%s /%s HTTP/", prev, fichier);
+    sscanf(requete, "%s /%[^ H] HTTP/", prev, fichier);
 
     /*Comme tous nos fichiers se trouve dans le répertoire fichier on ajoute devant*/
     /*l'endroit ou se trouve tout les fichier*/
@@ -128,23 +122,6 @@ RequeteStruct *annalyseRequete(char *requete)
     /*Si on arrive la c'est que tout est bon pour le moment*/
     /*On essaye d'extraire alors le fichier de la requete*/
     extraitFichier(requete, r);
+    
     return r;
-}
-
-void test(char *requete){
-    printf("Test avec un fichier extraire le nom du fichier +connaitre sa taille !\n");
-
-    /*on verifie le format*/
-    Requete req= annalyseRequete(requete);
-
-    /*on recupere le nom du fichier à traiter*/
-    printf("tout les fichiers sont dans le repertoire fichier donc :\n");
-
-    printf("Le nom du fichier à traiter est : %s\n",req->fichier);
-    /*on recupere la longeur du fichier*/
-    printf("La taille du fichier : ");
-    printf("%ld octets.\n",longeurFichier(req));
-
-    /*on libere la mémoire*/
-    freeRequete(req);
 }

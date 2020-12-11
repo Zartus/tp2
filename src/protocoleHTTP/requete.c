@@ -13,10 +13,6 @@ RequeteStruct *initialisationStructure()
     return r;
 }
 
-void useCommande(Requete r){
-    r->commande(r);
-}
-
 /**
  * @brief Libere la mémoire qui correspond à la réponse de la requete
  * 
