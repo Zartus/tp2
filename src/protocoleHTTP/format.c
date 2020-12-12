@@ -7,7 +7,7 @@
  * @param r la structure qui sauvegardera notre requete
  * @return int 1 est bon autre pas bon
  */
-int extractCommande(char *requete, RequeteStruct *r)
+int extractCommande(char *requete, RequeteStruct* r)
 {
     /*buffer pour extraire la commande */
     /*improbable que la commande est une taille > 1000*/
@@ -38,13 +38,13 @@ int extractCommande(char *requete, RequeteStruct *r)
 
 //renomer variable
 //que faire en cas de juste /
-void extraitFichier(char *requete, RequeteStruct *r)
+void extraitFichier(char *requete, Requete r)
 {
     /*Initialisation des buffers que nous allons utiliser*/
     char fichier[512] = "";
     char prev[256] = "";
     char path[1024] = "";
-    
+    char *file=NULL;
     /*On utilise sscanf pour extraire de la requete comme nous savons que le format est bon*/
     sscanf(requete, "%s /%[^ H] HTTP/", prev, fichier);
 
@@ -53,6 +53,7 @@ void extraitFichier(char *requete, RequeteStruct *r)
     sprintf(path, "fichier/%s", fichier);
     
     /*ON alloue la mémoire*/
+
     if((r->fichier = malloc(sizeof(char) * (strlen(path)+1)))==NULL){
         /*si il y a eu un probleme on l'affiche du coté serveur*/
         perror("Probleme allocation");
@@ -60,6 +61,7 @@ void extraitFichier(char *requete, RequeteStruct *r)
         /*erreur 500*/
         r->rep->numeroReponse=envoyerReponse500;
     }else{
+        setFichier(r,file);
         /*si tout c'est bien passé on place le chemin du fichier dans notre structure*/
         strcpy(r->fichier, path);
     }
@@ -92,12 +94,11 @@ int verifFormat(char *requete)
     return 0;//format pas bon
 }
 
-
-RequeteStruct *annalyseRequete(char *requete)
+Requete annalyseRequete(char *requete)
 {
     /*Allocation de la mémoire dans la heap*/
     /*On appelle la fonction qui initilise la structure*/
-    RequeteStruct *r = initialisationStructure();
+    Requete r = initialisationStructure();
 
     /*On appelle la fonction qui vérifie le format*/
     if (!verifFormat(requete))

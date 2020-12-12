@@ -1,9 +1,9 @@
 #include "protocoleHTTP.h"
 
-int repondre(RequeteStruct *r, OperateFunctor envoyer)
+int repondre(RequeteStruct* r, OperateFunctor envoyer)
 {
     assert(r != NULL); //verifie que r existe
-
+    
     int err = 0;
     
     if (r->commande != NULL) //si il y a une commande dans notre structure on la lance
