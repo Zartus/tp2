@@ -71,6 +71,14 @@ void TerminaisonClient();
  */
 void Terminaison();
 
-
+/**
+ * @brief Fonction interface qui envoie le message à l'api fournis par les professeurs pour le TP2
+ * 
+ * @param message le message à envoyer
+ * @param contentLength la taille du message
+ * @param binaire si 1 alors c'est un message binaire si 0 UTF8
+ * @return int 
+ */
+int emissionChoice(char *message,size_t contentLength,int binaire);
 
 #endif

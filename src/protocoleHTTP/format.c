@@ -1,4 +1,27 @@
 #include "protocoleHTTP.h"
+#include "requete.h"
+
+int verifFormat(char *requete)
+{
+    /*tableau de chaine de caractee qui nous sert de buffer*/
+    /*Pas besoin de stocker grand chose dedans*/
+    /*on veut juste pour le moment vérfier qu'il y a quelque chose dedans*/
+    char verif[4][256] = {"", "", "", ""};
+
+    /*variable qui gere les erreurs*/
+    int err = 0;
+
+    /*on annalyse la requete avec sscanf*/
+    err = sscanf(requete, "%[^ /] %[^ HTTP] HTTP/%s %[^\r\n]", verif[0], verif[1], verif[2], verif[3]);
+
+    /*si le format est bon err sera à 3*/
+    /*car 3 variables extraites de sscanf*/
+    /*On regarde ensuite si le numéro du protocole est correcte */
+
+    return ((err == 3) || (err == 2 && !strcmp(verif[1],""))) 
+            && ((!strcmp(verif[2], "0.9") || !strcmp(verif[2], "1.0") 
+                || !strcmp(verif[2], "1.1") || !strcmp(verif[2], "2.0")));
+}
 
 /**
  * @brief Permet d'extraire la commande d'une requete HTTP
@@ -7,7 +30,7 @@
  * @param r la structure qui sauvegardera notre requete
  * @return int 1 est bon autre pas bon
  */
-int extractCommande(char *requete, RequeteStruct* r)
+int extractCommande(char *requete, RequeteStruct *r)
 {
     /*buffer pour extraire la commande */
     /*improbable que la commande est une taille > 1000*/
@@ -21,7 +44,7 @@ int extractCommande(char *requete, RequeteStruct* r)
     if (err == 1)
     {
         /**/
-        if (!strcmp(possibilite, "GET"))//les differentes commande ici
+        if (!strcmp(possibilite, "GET")) //les differentes commande ici
         {
             r->commande = commandeGet;
         }
@@ -44,54 +67,33 @@ void extraitFichier(char *requete, Requete r)
     char fichier[512] = "";
     char prev[256] = "";
     char path[1024] = "";
-    char *file=NULL;
+
     /*On utilise sscanf pour extraire de la requete comme nous savons que le format est bon*/
-    sscanf(requete, "%s /%[^ H] HTTP/", prev, fichier);
+    sscanf(requete, "%s %[^ H] HTTP/", prev, fichier);
+
+    if (!strcmp(fichier, "/"))
+        strcpy(fichier, "/index.html");
 
     /*Comme tous nos fichiers se trouve dans le répertoire fichier on ajoute devant*/
     /*l'endroit ou se trouve tout les fichier*/
-    sprintf(path, "fichier/%s", fichier);
-    
+    sprintf(path, "fichier%s", fichier);
+
     /*ON alloue la mémoire*/
 
-    if((r->fichier = malloc(sizeof(char) * (strlen(path)+1)))==NULL){
+    if ((r->fichier = malloc(sizeof(char) * (strlen(path) + 1))) == NULL)
+    {
         /*si il y a eu un probleme on l'affiche du coté serveur*/
         perror("Probleme allocation");
         /*Et on indique dans la réponse qu'il y a eu un probleme du coté serveur*/
         /*erreur 500*/
-        r->rep->numeroReponse=envoyerReponse500;
-    }else{
-        setFichier(r,file);
+        r->rep->numeroReponse = envoyerReponse500;
+    }
+    else
+    {
+
         /*si tout c'est bien passé on place le chemin du fichier dans notre structure*/
         strcpy(r->fichier, path);
     }
-}
-
-int verifFormat(char *requete)
-{
-    /*tableau de chaine de caractee qui nous sert de buffer*/
-    /*Pas besoin de stocker grand chose dedans*/
-    /*on veut juste pour le moment vérfier qu'il y a quelque chose dedans*/
-    char verif[4][256]={"","","",""};
-    
-    /*variable qui gere les erreurs*/
-    int err = 0;
-
-    /*on annalyse la requete avec sscanf*/
-    err = sscanf(requete, "%s /%s HTTP/%s %[^\r\n]", verif[0], verif[1], verif[2], verif[3]);
-
-    /*si le format est bon err sera à 3*/
-    /*car 3 variables extraites de sscanf*/
-    /*On regarde ensuite si le numéro du protocole est correcte */
-    if (err == 3 && (!strcmp(verif[2], "0.9") 
-                     || !strcmp(verif[2], "1.0") 
-                     || !strcmp(verif[2], "1.1") 
-                     || !strcmp(verif[2], "2.0")))
-    {
-        return 1;//format bon
-    }
-    
-    return 0;//format pas bon
 }
 
 Requete annalyseRequete(char *requete)

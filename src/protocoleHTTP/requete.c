@@ -1,4 +1,5 @@
 #include "protocoleHTTP.h"
+#include "requete.h"
 
 RequeteStruct *initialisationStructure()
 {
@@ -6,7 +7,7 @@ RequeteStruct *initialisationStructure()
     r->commande = NULL;
     r->fichier = NULL;
     r->rep = malloc(sizeof(reponseRequete));
-    r->rep->contentType = NULL;
+    r->rep->contentType = 0;
     r->rep->contentLength = 0;
     r->rep->numeroReponse = NULL;
     r->rep->contenu = NULL;
@@ -20,11 +21,14 @@ RequeteStruct *initialisationStructure()
  */
 void freeRep(reponseRequete *rep)
 {
-    if(rep->contentType)
-        free(rep->contentType);
-    if(rep->contenu)
+    if (rep->contenu)
+    {
         free(rep->contenu);
+        rep->contenu = NULL;
+    }
+
     free(rep);
+    rep = NULL;
 }
 
 /**
@@ -34,8 +38,14 @@ void freeRep(reponseRequete *rep)
  */
 void freeRequete(RequeteStruct *sRequest)
 {
-    if(sRequest->fichier!=NULL)
+    if (sRequest->fichier)
+    {
         free(sRequest->fichier);
+        sRequest->fichier = NULL;
+    }
+
     freeRep(sRequest->rep);
+    sRequest->rep = NULL;
     free(sRequest);
+    sRequest = NULL;
 }

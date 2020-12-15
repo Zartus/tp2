@@ -1,44 +1,43 @@
 #include "protocoleHTTP.h"
+#include "requete.h"
 
-int repondre(RequeteStruct* r, OperateFunctor envoyer)
+int repondre(RequeteStruct *r, OperateFunctor envoyer)
 {
-    assert(r != NULL); //verifie que r existe
-    
+    assert(r != NULL); //mode DEBUG
+
     int err = 0;
-    
-    if (r->commande != NULL) //si il y a une commande dans notre structure on la lance
-    {
+
+    if (r->commande)    //si il y a une commande dans notre structure on la lance
         r->commande(r); //application de changement sur la structure
-    }
 
     err = r->rep->numeroReponse(r, envoyer);
-    
+
     /*On libere la mémoire*/
     freeRequete(r);
-    
-    //assert((r == NULL) && (err == 0 || err == 1));//permet de verifier err et que r est bien liberer
+
     return err;
 }
 
 void commandeGet(Requete r)
 {
+
     r->rep->contentType = getExtension(r);
 
-    //voir pour pas utiliser code de retour non ? pas meilleur
     r->rep->contentLength = longeurFichier(r);
 
-    if(!strcmp(r->rep->contentType, "html")){
-        if ((r->rep->contenu = envoyerContenuFichierText(r)) != NULL)
+    /*quand on arrive pas à ouvrir le fichier erreur 404*/
+    if (r->rep->numeroReponse == NULL)
+    {
+        if (r->rep->contentType < lastText)
         {
-            r->rep->numeroReponse = envoyerReponse200HTML;
+
+            if ((r->rep->contenu = envoyerContenuFichierText(r)))
+                r->rep->numeroReponse = envoyerReponse200HTML;
         }
-    }else{
-        if ((r->rep->contenu = envoyerContenuFichierBinaire(r)) != NULL)
+        else
         {
-            if(!strcmp(r->rep->contentType, "jpg"))
-                r->rep->numeroReponse = envoyerReponse200JPG;
-            if(!strcmp(r->rep->contentType, "ico"))
-                r->rep->numeroReponse = envoyerReponse200ICO;
+            if ((r->rep->contenu = envoyerContenuFichierBinaire(r)))
+                r->rep->numeroReponse = envoyerReponse200Binaire;
         }
     }
 }

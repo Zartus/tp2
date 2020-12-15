@@ -1,4 +1,5 @@
 #include "protocoleHTTP.h"
+#include "requete.h"
 
 size_t longeurFichier(RequeteStruct *r)
 {
@@ -37,16 +38,26 @@ size_t longeurFichier(RequeteStruct *r)
     return size;
 }
 
-//on stocke EOF?// truc à voir bizarre je trouve
-char *getExtension(RequeteStruct *r)
+enum type extension(char *ext)
 {
-    char *content = NULL;
+    char all[SIZETYPEMEDIA][32] = {TYPEMEDIA};
+    enum type enumALL[SIZETYPEMEDIA] = {HTML, JPEG, JPEG, ICO, UNKNOW};
+
+    unsigned char i = 0;
+
+    for (; strcmp(*(all + i), ext) && i < SIZETYPEMEDIA; ++i)
+        ;
+
+    return enumALL[i];
+}
+
+enum type getExtension(RequeteStruct *r)
+{
     char com[256] = "";
     char prev[256] = "";
     sscanf(r->fichier, "%[^.].%s", com, prev);
-    content = malloc(sizeof(char) * (strlen(prev) + 1));
-    strcpy(content, prev);
-    return content;
+
+    return extension(prev);
 }
 
 char *envoyerContenuFichierText(RequeteStruct *r)
@@ -82,10 +93,10 @@ char *envoyerContenuFichierText(RequeteStruct *r)
 
 char *envoyerContenuFichierBinaire(RequeteStruct *r)
 {
-    
+
     FILE *fichier;
     size_t taille;
-    
+
     //Ouverture du fichier à copier et affichage d'une erreur si impossible
     if ((fichier = fopen(r->fichier, "r+b")) == NULL)
     {
@@ -96,7 +107,7 @@ char *envoyerContenuFichierBinaire(RequeteStruct *r)
 
     taille = longeurFichier(r);
     char *content = malloc(taille * sizeof(char));
-    
+
     fseek(fichier, 0, SEEK_SET);
 
     if (!fread(content, taille, 1, fichier))

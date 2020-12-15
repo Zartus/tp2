@@ -311,3 +311,11 @@ void Terminaison()
 {
 	close(socketEcoute);
 }
+
+int emissionChoice(char *message,size_t contentLength,int binaire){
+    
+    if(binaire)
+        return EmissionBinaire(message,contentLength);
+    
+    return Emission(message);
+}

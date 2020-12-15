@@ -7,31 +7,37 @@
 #include <assert.h>
 #include "serveur.h"
 
+/**
+ * @brief Enumeartion avec les differents type de média possible
+ * 
+ */
+enum type { HTML, JPEG, ICO, UNKNOW };
+
 #define LONGUEUR_TAMPON 4096
+
+#define TYPEMEDIA "html", "jpg", "jpeg", "ico","unknow"
+
+#define lastText 1
+
+#define SIZETYPEMEDIA 5
+
+#define MEDIACONTENTREPONSE "text/html","image/jpeg","image/x-icon","unknow/unknow"
+
+#define mediaReponseLength 4
+
 //possiblement faire 2 .h car probleme sur les acces
+/**
+ * @brief TypeOpaque
+ * Pour pas que l'utilisateur de notre API puisse avoir accer directement au contenu de notre structure
+ * 
+ */
+typedef struct s_httpRequestStruct* Requete;
 
 /**
  * @brief functor quoi doit respecter le format suivant int functor(char* something)
  * utiliser ici pour émission mais peut etre utiliser pour d'autre chose put ...
  */
 typedef int (*OperateFunctor)(char *,size_t,int);
-
-typedef struct s_httpRequestStruct
-{
-    void (*commande)(struct s_httpRequestStruct *);
-    char *fichier;
-    struct reponseRequeteS *rep;
-}RequeteStruct;
-
-typedef struct reponseRequeteS
-{
-    char *contentType;
-    size_t contentLength;
-    char *contenu;
-    int (*numeroReponse)(struct s_httpRequestStruct *, OperateFunctor);
-} reponseRequete;
-
-typedef struct s_httpRequestStruct* Requete;
 
 /**
  * @brief Permet d'ouvrir un fichier
@@ -55,7 +61,7 @@ int fermetureFichier(FILE *f);
  * 
  * @return RequeteStruct* renvoie un pointeur vers la requete
  */
-RequeteStruct* initialisationStructure();
+Requete initialisationStructure();
 
 /**
  * @brief annalyse la requete 
@@ -63,14 +69,14 @@ RequeteStruct* initialisationStructure();
  * @param requete la requete à annalyser
  * @return RequeteStruct* renvoie 
  */
-RequeteStruct* annalyseRequete(char *requete);
+Requete annalyseRequete(char *requete);
 
 /**
  * @brief Permet de liberer la mémoire de la requete
  * 
  * @param sRequest 
  */
-void freeRequete(RequeteStruct* sRequest);
+void freeRequete(Requete sRequest);
 
 /**
  * @brief Permet d'obtenir la longeur d'un fichier en caractere UTF-8
@@ -78,7 +84,7 @@ void freeRequete(RequeteStruct* sRequest);
  * @param r la requete qui contient le fichier
  * @return size_t le nombre de de caractere dans le fichier
  */
-size_t longeurFichier(RequeteStruct* r);
+size_t longeurFichier(Requete r);
 
 /**
  * @brief Permet d'obtenir l'extension d'un fichier
@@ -86,7 +92,7 @@ size_t longeurFichier(RequeteStruct* r);
  * @param r la requete qui contient le fichier
  * @return char* retourne une pointeur vers l'extension du fichier
  */
-char *getExtension(RequeteStruct* r);
+enum type getExtension(Requete r);
 
 /**
  * @brief Permet d'obtenir le contenue du fichier text 
@@ -94,7 +100,7 @@ char *getExtension(RequeteStruct* r);
  * @param r la requete qui contient le fichier
  * @return char* retourne une pointeur vers le contenue du fichier
  */
-char *envoyerContenuFichierText(RequeteStruct* r);
+char *envoyerContenuFichierText(Requete r);
 
 /**
  * @brief Permet d'obtenir le contenue du binaire
@@ -102,14 +108,14 @@ char *envoyerContenuFichierText(RequeteStruct* r);
  * @param r la requete qui contient le fichier
  * @return char* retourne une pointeur vers le contenue du fichier
  */
-char *envoyerContenuFichierBinaire(RequeteStruct* r);
+char *envoyerContenuFichierBinaire(Requete r);
 
 /**
  * @brief Ce que doit réaliser la commande GET
  * 
  * @param r La requete sur la quelle appliqué la commande GET
  */
-void commandeGet(RequeteStruct* r);
+void commandeGet(Requete r);
 
 /**
  * @brief Permet d'envoyer une réponse au travers du Functor 
@@ -118,7 +124,7 @@ void commandeGet(RequeteStruct* r);
  * @param Envoyer notre functor qui nous permet de manipuler notre requete
  * @return int Renvoie 1 si y a pas eu de probleme sinon 0 si le Functor à échouer
  */
-int repondre(RequeteStruct* r,OperateFunctor envoyer);
+int repondre(Requete r,OperateFunctor envoyer);
 
 /**
  * @brief Permet d'envoyer la réponse HTTP 200
@@ -127,7 +133,7 @@ int repondre(RequeteStruct* r,OperateFunctor envoyer);
  * @param envoyer Le functor qui nous permet de répondre
  * @return int retourne 1 si le Functor c'est bien passé sinon 0
  */
-int envoyerReponse200HTML(RequeteStruct *r, OperateFunctor envoyer);
+int envoyerReponse200HTML(Requete r, OperateFunctor envoyer);
 
 /**
  * @brief Permet d'envoyer la réponse HTTP 200
@@ -136,7 +142,7 @@ int envoyerReponse200HTML(RequeteStruct *r, OperateFunctor envoyer);
  * @param envoyer Le functor qui nous permet de répondre
  * @return int retourne 1 si le Functor c'est bien passé sinon 0
  */
-int envoyerReponse200JPG(RequeteStruct *r, OperateFunctor envoyer);
+int envoyerReponse200JPG(Requete r, OperateFunctor envoyer);
 
 /**
  * @brief Permet d'envoyer la réponse HTTP 400
@@ -145,7 +151,7 @@ int envoyerReponse200JPG(RequeteStruct *r, OperateFunctor envoyer);
  * @param envoyer Le functor qui nous permet de répondre
  * @return int retourne 1 si le Functor c'est bien passé sinon 0
  */
-int envoyerReponse400(RequeteStruct* r, OperateFunctor envoyer);
+int envoyerReponse400(Requete r, OperateFunctor envoyer);
 
 /**
  * @brief Permet d'envoyer la réponse HTTP 404
@@ -154,7 +160,7 @@ int envoyerReponse400(RequeteStruct* r, OperateFunctor envoyer);
  * @param envoyer Le functor qui nous permet de répondre
  * @return int retourne 1 si le Functor c'est bien passé sinon 0
  */
-int envoyerReponse404(RequeteStruct* r, OperateFunctor envoyer);
+int envoyerReponse404(Requete r, OperateFunctor envoyer);
 
 /**
  * @brief Permet d'envoyer la réponse HTTP 500
@@ -163,9 +169,20 @@ int envoyerReponse404(RequeteStruct* r, OperateFunctor envoyer);
  * @param envoyer Le functor qui nous permet de répondre
  * @return int retourne 1 si le Functor c'est bien passé sinon 0
  */
-int envoyerReponse500(RequeteStruct* r, OperateFunctor envoyer);
+int envoyerReponse500(Requete r, OperateFunctor envoyer);
 
-int envoyerReponse200ICO(RequeteStruct *r, OperateFunctor envoyer);
+/**
+ * @brief Permet d'envoyer la réponse HTTP 200
+ * 
+ * @param r La requete à la quelle on doit répondre
+ * @param envoyer Le functor qui nous permet de répondre
+ * @return int retourne 1 si le Functor c'est bien passé sinon 0
+ */
+int envoyerReponse200ICO(Requete r, OperateFunctor envoyer);
+
+int envoyerReponse200HTML(Requete r, OperateFunctor envoyer);
+
+int envoyerReponse200Binaire(Requete r, OperateFunctor envoyer);
 
 void test(char *requete);
 
