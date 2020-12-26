@@ -17,11 +17,14 @@ int envoyerReponse200HTML(RequeteStruct *r, OperateFunctor envoyer)
     char *envoie = NULL;
     int err = 0;
     char all[mediaReponseLength][32] = {MEDIACONTENTREPONSE};
+
     if((envoie = allocationReponse(r->rep->contentLength + 100))==NULL){
         return envoyerReponse500(r,envoyer);//on retourne l'erreur 500 en cas de
     }
+
     sprintf(envoie, "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\nContent-Type: %s\r\n\r\n%s", r->rep->contentLength, all[r->rep->contentType], r->rep->contenu);
     err = envoyer(envoie, strlen(envoie), 0);
+    printf("\n\nJ'ai envoyé texte :%s\n\n",all[r->rep->contentType]);
     free(envoie);
     return err;
 }
@@ -37,6 +40,7 @@ int envoyerReponse200Binaire(RequeteStruct *r, OperateFunctor envoyer)
     sprintf(envoie, "HTTP/1.1 200 OK\r\nContent-Length: %ld\r\nContent-Type: %s\r\n\r\n", r->rep->contentLength, all[r->rep->contentType]);
     err = envoyer(envoie, strlen(envoie), 0) && envoyer(r->rep->contenu, r->rep->contentLength, 1);
     free(envoie);
+    printf("\n\nJ'ai envoyé binaire :%s\n\n",all[r->rep->contentType]);
     return err;
 }
 
@@ -74,6 +78,7 @@ int envoyerReponse404(RequeteStruct *r, OperateFunctor envoyer)
 
 int envoyerReponse400(RequeteStruct *r, OperateFunctor envoyer)
 {
+    //on s'en occupe pas mais elle est la
     (void)r;
     (void)envoyer;
     return 1;
@@ -85,7 +90,7 @@ int envoyerReponse500(RequeteStruct *r, OperateFunctor envoyer)
     char *envoie=NULL;
     r = modeleSetError(r, "fichier/500.html");
     if((envoie = allocationReponse(r->rep->contentLength + 100))==NULL){
-        //probleme =>rien qui va dans le si ca arrive 
+        //gros probleme =>rien qui va si on arrive la
         return 0;
     }
     sprintf(envoie, "HTTP/1.1 500 \r\nContent-Length: %ld\r\nCotent-Type: text/%s\r\n\r\n%s", r->rep->contentLength, "html", r->rep->contenu);

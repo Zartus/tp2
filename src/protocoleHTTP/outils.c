@@ -38,15 +38,28 @@ size_t longeurFichier(RequeteStruct *r)
     return size;
 }
 
+/**
+ * @brief On renvoie le type de l'extension
+ * 
+ * @param ext 
+ * @return enum type retourn le type si il est pas connu renvoie UNKNOW
+ */
 enum type extension(char *ext)
 {
+    /*on crée un tableau avec toutes les extensions */
     char all[SIZETYPEMEDIA][32] = {TYPEMEDIA};
-    enum type enumALL[SIZETYPEMEDIA] = {HTML, JPEG, JPEG, ICO, UNKNOW};
+
+    /*on fait un tableau avec tout les types possible*/
+    enum type enumALL[SIZETYPEMEDIA] = {enumeration};
 
     unsigned char i = 0;
 
-    for (; strcmp(*(all + i), ext) && i < SIZETYPEMEDIA; ++i)
+    /*on parcour notre tableau avec les extensions pour voir si on la trouve*/
+    for (; strcmp(all[i], ext) && i < SIZETYPEMEDIA; ++i)
         ;
+    /*si on la trouve pas c'est que le type n'est pas connu*/
+    if (i == SIZETYPEMEDIA)
+        return UNKNOW;
 
     return enumALL[i];
 }
@@ -54,37 +67,51 @@ enum type extension(char *ext)
 enum type getExtension(RequeteStruct *r)
 {
     char com[256] = "";
-    char prev[256] = "";
-    sscanf(r->fichier, "%[^.].%s", com, prev);
-
-    return extension(prev);
+    char ext[256] = "";
+    /*On extrait l'extension du nom du fichier*/
+    sscanf(r->fichier, "%[^.].%s", com, ext);
+    /*on retourne l'extension*/
+    return extension(ext);
 }
 
 char *envoyerContenuFichierText(RequeteStruct *r)
 {
-    //peut etre truc à revoir ici +1 +4 ??
-    char *content = malloc(sizeof(char) * (longeurFichier(r) + 1));
+    /*allocation de la mémoire pour le contenue du fichier*/
+    char *content = NULL;
+    if ((content = malloc(sizeof(char) * (longeurFichier(r) + 1))) == NULL)
+    {
+        /*Si probleme on l'affiche pour le serveur et on indique l'erreur 500*/
+        perror("Probleme allocation de la mémoire");
+        r->rep->numeroReponse = envoyerReponse500;
+        /*et on revoie NULL*/
+        return NULL;
+    }
+
     FILE *fichier;
     int i = 0;
 
     //Ouverture du fichier à copier et affichage d'une erreur si impossible
     if ((fichier = fopen(r->fichier, "rt")) == NULL)
     {
-        perror("Probleme à l'ouverture de l'fichier 2: ");
-        r->rep->numeroReponse = envoyerReponse404;
+        perror("Probleme à l'ouverture de l'fichier : ");
+        r->rep->numeroReponse = envoyerReponse404; /*on indique l'erreur 404*/
 
         return NULL;
     }
-
+    /*on copie tout le contenue de notre fichier dans la mémoire alloué*/
     for (; (*(content + i) = fgetc(fichier)) != EOF; ++i)
         ;
-
+    //on rejoute \0
     *(content + i) = '\0';
 
+    /*on ferme le fichier*/
     if (fclose(fichier) == EOF)
     {
+        /*on indique l'erreur au serveur*/
         perror("probleme fermeture fichier");
+        /*on initialise l'erreur 500*/
         r->rep->numeroReponse = envoyerReponse500;
+        /*Et on renvoie NULL*/
         return NULL;
     }
 
@@ -100,30 +127,41 @@ char *envoyerContenuFichierBinaire(RequeteStruct *r)
     //Ouverture du fichier à copier et affichage d'une erreur si impossible
     if ((fichier = fopen(r->fichier, "r+b")) == NULL)
     {
-        perror("Probleme à l'ouverture de l'fichier 2: ");
+        perror("Probleme à l'ouverture de l'fichier: ");
         r->rep->numeroReponse = envoyerReponse404;
         return NULL;
     }
 
     taille = longeurFichier(r);
-    char *content = malloc(taille * sizeof(char));
-
+    char *content = NULL;
+    if((content=malloc(taille * sizeof(char)))==NULL){
+        perror("Probleme à l'allocation de la mémoire");
+        /*On initiailise l'erreur 500*/
+        r->rep->numeroReponse = envoyerReponse500;
+        /*On renvoie NULL*/
+        return NULL;
+    }
+    //on se place au début du fichier
     fseek(fichier, 0, SEEK_SET);
-
+    
+    /*on copie le contenue du fichier binaire dans la variable*/
     if (!fread(content, taille, 1, fichier))
     {
         fprintf(stderr, "Probleme à la lecture.");
         r->rep->numeroReponse = envoyerReponse500;
+        fclose(fichier);//pas besoin de faire plus si probleme car déja probleme
+        return NULL;
     }
-
+    //on place la taille dans la structure
     r->rep->contentLength = taille;
-
+  
+    //on ferme le fichier
     if (fclose(fichier) == EOF)
     {
         perror("Probleme fermeture fichier");
         r->rep->numeroReponse = envoyerReponse500;
         return NULL;
     }
-
+    //on renvoie notre variable allouer
     return content;
 }

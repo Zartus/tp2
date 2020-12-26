@@ -121,8 +121,10 @@ int InitialisationAvecService(char *service)
 	longeurAdr = res->ai_addrlen;
 
 	freeaddrinfo(ressave);
+
 	/* attends au max 4 clients */
-	listen(socketEcoute, 4);
+	printf("listent ==%d\n",listen(socketEcoute, -1));
+	
 	printf("Creation du serveur reussie sur %s.\n", service);
 
 	return 1;
@@ -164,16 +166,19 @@ int AttenteClient()
  */
 char *Reception()
 {
+	printf("la");
 	char message[LONGUEUR_TAMPON];
 	int index = 0;
 	int fini = FALSE;
 	int retour = 0;
+	
 	while (!fini)
 	{
 		/* on cherche dans le tampon courant */
 		while ((finTampon > debutTampon) &&
 			   (tamponClient[debutTampon] != '\n'))
 		{
+			printf("danas la boucle \n");
 			message[index++] = tamponClient[debutTampon++];
 		}
 		/* on a trouve ? */
@@ -311,7 +316,14 @@ void Terminaison()
 {
 	close(socketEcoute);
 }
-
+/**
+ * @brief Permet d'envoyer un message sois binaire sois texte
+ * 
+ * @param message le message à envoyer
+ * @param contentLength la taille du message
+ * @param binaire si ==1 alors c'est une émission binaire sinon c'est une emission texte
+ * @return int 
+ */
 int emissionChoice(char *message,size_t contentLength,int binaire){
     
     if(binaire)

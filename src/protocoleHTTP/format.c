@@ -17,10 +17,7 @@ int verifFormat(char *requete)
     /*si le format est bon err sera à 3*/
     /*car 3 variables extraites de sscanf*/
     /*On regarde ensuite si le numéro du protocole est correcte */
-
-    return ((err == 3) || (err == 2 && !strcmp(verif[1],""))) 
-            && ((!strcmp(verif[2], "0.9") || !strcmp(verif[2], "1.0") 
-                || !strcmp(verif[2], "1.1") || !strcmp(verif[2], "2.0")));
+    return ((err == 3) || (err == 2 && !strcmp(verif[1], ""))) && ((!strcmp(verif[2], "0.9") || !strcmp(verif[2], "1.0") || !strcmp(verif[2], "1.1") || !strcmp(verif[2], "2.0") || !strcmp(verif[2], "undefined")));
 }
 
 /**
@@ -43,7 +40,6 @@ int extractCommande(char *requete, RequeteStruct *r)
     /*si err==1 c'est que la ommande à ete extraite*/
     if (err == 1)
     {
-        /**/
         if (!strcmp(possibilite, "GET")) //les differentes commande ici
         {
             r->commande = commandeGet;
@@ -59,8 +55,6 @@ int extractCommande(char *requete, RequeteStruct *r)
     return err;
 }
 
-//renomer variable
-//que faire en cas de juste /
 void extraitFichier(char *requete, Requete r)
 {
     /*Initialisation des buffers que nous allons utiliser*/
@@ -78,8 +72,7 @@ void extraitFichier(char *requete, Requete r)
     /*l'endroit ou se trouve tout les fichier*/
     sprintf(path, "fichier%s", fichier);
 
-    /*ON alloue la mémoire*/
-
+    /*On alloue la mémoire*/
     if ((r->fichier = malloc(sizeof(char) * (strlen(path) + 1))) == NULL)
     {
         /*si il y a eu un probleme on l'affiche du coté serveur*/
@@ -90,7 +83,6 @@ void extraitFichier(char *requete, Requete r)
     }
     else
     {
-
         /*si tout c'est bien passé on place le chemin du fichier dans notre structure*/
         strcpy(r->fichier, path);
     }
@@ -125,6 +117,6 @@ Requete annalyseRequete(char *requete)
     /*Si on arrive la c'est que tout est bon pour le moment*/
     /*On essaye d'extraire alors le fichier de la requete*/
     extraitFichier(requete, r);
-    
+
     return r;
 }

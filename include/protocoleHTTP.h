@@ -6,38 +6,30 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "serveur.h"
+#include "config.h"
 
 /**
- * @brief Enumeartion avec les differents type de média possible
+ * @brief Enumeration avec les differents type de média possible
  * 
  */
-enum type { HTML, JPEG, ICO, UNKNOW };
+enum type
+{
+    enumeration,
+    UNKNOW
+};
 
-#define LONGUEUR_TAMPON 4096
-
-#define TYPEMEDIA "html", "jpg", "jpeg", "ico","unknow"
-
-#define lastText 1
-
-#define SIZETYPEMEDIA 5
-
-#define MEDIACONTENTREPONSE "text/html","image/jpeg","image/x-icon","unknow/unknow"
-
-#define mediaReponseLength 4
-
-//possiblement faire 2 .h car probleme sur les acces
 /**
  * @brief TypeOpaque
  * Pour pas que l'utilisateur de notre API puisse avoir accer directement au contenu de notre structure
  * 
  */
-typedef struct s_httpRequestStruct* Requete;
+typedef struct s_httpRequestStruct *Requete;
 
 /**
  * @brief functor quoi doit respecter le format suivant int functor(char* something)
  * utiliser ici pour émission mais peut etre utiliser pour d'autre chose put ...
  */
-typedef int (*OperateFunctor)(char *,size_t,int);
+typedef int (*OperateFunctor)(char *, size_t, int);
 
 /**
  * @brief Permet d'ouvrir un fichier
@@ -124,7 +116,7 @@ void commandeGet(Requete r);
  * @param Envoyer notre functor qui nous permet de manipuler notre requete
  * @return int Renvoie 1 si y a pas eu de probleme sinon 0 si le Functor à échouer
  */
-int repondre(Requete r,OperateFunctor envoyer);
+int repondre(Requete r, OperateFunctor envoyer);
 
 /**
  * @brief Permet d'envoyer la réponse HTTP 200
